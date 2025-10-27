@@ -1,0 +1,11 @@
+services: 
+  frontend:
+      build:
+        context: .
+      ports:
+        - "3000:3000"
+      env_file:
+        - .env.local    
+      environment:
+        NEXT_PUBLIC_DOCKER_ENV: "true"
+      restart: unless-stopped

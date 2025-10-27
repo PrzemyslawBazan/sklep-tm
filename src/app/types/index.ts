@@ -1,0 +1,99 @@
+// types/index.ts
+export interface Service {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  fullDescription: string;
+  category: string;
+  price: number;
+  currency: string;
+  vatRate: number;
+  priceIncludesVat: boolean;
+  isActive: boolean;
+  deliverables: string[]; // Array of strings
+  overview: string;
+  overview_points: string[],
+  steps: string[],
+  requirements: string[]
+}
+export interface CartItem {
+  serviceId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  addedAt: Date;
+  note?: string
+}
+
+export interface CreateServiceData {
+  name: string;
+  slug: string;
+  description: string;
+  full_description: string;
+  category: string;
+  price: number | null;
+  currency: string;
+  vat_rate: number | null;
+  price_includes_vat: boolean;  
+  is_active: boolean;
+  deliverables: string[];
+  overview: string;
+  overview_points: string[],
+  steps: string[],
+  requirements: string[]
+}
+
+
+export interface Customer {
+  email: string;
+  companyName: string;
+  nip: string;
+  regon?: string;
+  krs?: string;
+  contactPerson: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    position?: string;
+  };
+  address: {
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
+export interface Order {
+  orderId: string;
+  orderNumber: string;
+  customerId: string;
+  customer: {
+    email: string;
+    companyName: string;
+    nip: string;
+    contactPerson: string;
+    phone: string;
+  };
+  service: {
+    serviceId: string;
+    name: string;
+    description: string;
+    price: number;
+    vatRate: number;
+  };
+  pricing: {
+    netAmount: number;
+    vatAmount: number;
+    grossAmount: number;
+    currency: string;
+  };
+  payment: {
+    status: 'pending' | 'paid' | 'failed';
+    stripeCustomerId?: string;
+    stripePaymentIntentId?: string;
+  };
+  status: 'active' | 'completed' | 'cancelled';
+  createdAt: Date;
+}
