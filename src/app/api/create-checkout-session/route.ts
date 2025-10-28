@@ -8,7 +8,6 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY as string, {
 export async function POST(request: NextRequest) {
   try {
     const { orderId, customerId, customerStripeId, items, userInfo } = await request.json();
-
     let stripeCustomerId = customerStripeId;
     console.log('Initial stripeCustomerId:', stripeCustomerId);
     
