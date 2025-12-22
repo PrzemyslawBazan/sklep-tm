@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.0",
+    "@supabase/realtime-js": "^2.89.0",
+    "@supabase/supabase-js": "^2.89.0",
     "@tanstack/react-query": "^5.80.7",
     "firebase": "^11.9.0",
     "firebase-admin": "^13.4.0",
