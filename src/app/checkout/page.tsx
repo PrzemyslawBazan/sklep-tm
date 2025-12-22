@@ -14,10 +14,11 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [savedCustomerData, setSavedCustomerData] = useState<Customer | null>(null);
+  const[selectedStripeCustomerId,setSelectedStripeCustomerId]=useState<string|null>(null);
   const cart = useCart();
   const clearCart = useClearCart();
   const isHydrated = useIsCartHydrated();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   // Fetch saved customer data on mount
   useEffect(() => {
@@ -83,6 +84,12 @@ export default function CheckoutPage() {
       router.push('/');
     }
   }, [cart.length, isHydrated, router]);
+
+  
+  const handleCustomerSelect = ( stripeCustomerId : string | null ) => {
+     setSelectedStripeCustomerId(stripeCustomerId ); 
+     console.log ('Selected Stripe Customer ID:', stripeCustomerId); 
+    };
 
   const handleCheckout = async (customer: Customer) => {
     if (!user?.id) {
@@ -285,6 +292,7 @@ export default function CheckoutPage() {
           onSubmit={handleCheckout} 
           loading={loading} 
           initialData={savedCustomerData}
+          onCustomerSelect={handleCustomerSelect}
         />
       </div>
     </main>

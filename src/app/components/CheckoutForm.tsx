@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Customer } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CheckoutFormProps {
   onSubmit: (customer: Customer) => void;
   loading: boolean;
   initialData?: Customer | null;
+  onCustomerSelect?: (stripeCustomerId: string | null) => void;
 }
 
-export default function CheckoutForm({ onSubmit, loading, initialData }: CheckoutFormProps) {
+interface StripeCustomer {
+  id: string;
+  email: string;
+  name: string;
+  metadata?: {
+    companyName?: string;
+    nip?: string;
+  };
+}
+
+export default function CheckoutForm({ onSubmit, loading, initialData, onCustomerSelect  }: CheckoutFormProps) {
+  const { isAdmin } = useAuth();
+  const [stripeCustomers, setStripeCustomers] = useState<StripeCustomer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  
   const [formData, setFormData] = useState<Customer>({
     email: '',
     companyName: '',
@@ -28,6 +45,100 @@ export default function CheckoutForm({ onSubmit, loading, initialData }: Checkou
     },
   });
 
+  useEffect(() => {
+    if (isAdmin) {
+      fetchStripeCustomers();
+    }
+  }, [isAdmin]);
+
+  const fetchStripeCustomers = async () => {
+    setLoadingCustomers(true);
+    try {
+      const response = await fetch('/api/stripe/customers');
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Customers list:', data);
+        setStripeCustomers(data.customers || []);
+      } else {
+        console.error('Failed to fetch customers:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching Stripe customers:', error);
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
+
+  const handleCustomerSelect = async (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    
+    if (onCustomerSelect) {
+      onCustomerSelect(customerId || null);
+    }
+
+
+    if (!customerId) {
+      setFormData({
+        email: '',
+        companyName: '',
+        nip: '',
+        regon: '',
+        krs: '',
+        contactPerson: {
+          firstName: '',
+          lastName: '',
+          phone: '',
+          position: '',
+        },
+        address: {
+          street: '',
+          city: '',
+          postalCode: '',
+          country: 'PL',
+        },
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/stripe/customers/${customerId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const customer = data.customer;
+        
+        console.log('Customer details from Stripe:', customer);
+        
+        setFormData({
+          email: customer.email || '',
+          companyName: customer.metadata?.companyName || customer.name || '',
+          nip: customer.metadata?.nip || '',
+          regon: customer.metadata?.regon || '',
+          krs: customer.metadata?.krs || '',
+          contactPerson: {
+            firstName: customer.metadata?.firstName || '',
+            lastName: customer.metadata?.lastName || '',
+            phone: customer.phone || customer.metadata?.phone || '',
+            position: customer.metadata?.position || '',
+          },
+          address: {
+            street: customer.address?.line1 || '',
+            city: customer.address?.city || '',
+            postalCode: customer.address?.postal_code || '',
+            country: customer.address?.country || 'PL',
+          },
+        });
+      } else {
+        console.error('Failed to fetch customer:', response.status);
+        alert('Nie udało się pobrać danych klienta');
+      }
+    } catch (error) {
+      console.error('Error fetching customer details:', error);
+      alert('Błąd podczas pobierania danych klienta');
+    }
+  };
+
   // Listen for autofill event from parent component
   useEffect(() => {
     const handleAutofill = (event: Event) => {
@@ -35,7 +146,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData }: Checkou
       if (customEvent.detail) {
         setFormData(customEvent.detail);
       }
-      console.log(formData);
     };
 
     window.addEventListener('autofillCustomerData', handleAutofill);
@@ -48,7 +158,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData }: Checkou
   // Auto-fill on mount if initialData is provided
   useEffect(() => {
     if (initialData) {
-      console.log(initialData);
       setFormData(initialData);
     }
   }, [initialData]);
@@ -76,6 +185,36 @@ export default function CheckoutForm({ onSubmit, loading, initialData }: Checkou
 
   return (
     <form onSubmit={handleSubmit} className="bg-custom-beige space-y-6">
+      {/* Admin Customer Selector */}
+      {isAdmin && (
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-3 text-blue-900">
+            Panel Administratora
+          </h3>
+          <div>
+            <label className="block text-sm font-medium mb-2 text-blue-900">
+              Wybierz klienta ze Stripe
+            </label>
+            <select
+              value={selectedCustomerId}
+              onChange={(e) => handleCustomerSelect(e.target.value)}
+              disabled={loadingCustomers}
+              className="w-full p-3 border-2 border-blue-300 rounded-md bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            >
+              <option value="">-- Wybierz klienta lub wypełnij ręcznie --</option>
+              {stripeCustomers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name || customer.email} ({customer.email})
+                </option>
+              ))}
+            </select>
+            {loadingCustomers && (
+              <p className="text-sm text-blue-600 mt-2">Ładowanie klientów...</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div>
         <h3 className="text-lg font-semibold mb-4">Dane firmy</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

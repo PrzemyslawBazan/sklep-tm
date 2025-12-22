@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
       console.log(`Order ${orderId} already triggered. Skipping.`);
       return NextResponse.json({ message: 'Already launched' }, { status: 200 });
     }
-
+    console.log("LAUNCHED")
     const { error: insertError } = await supabase
-      .from('automation_triggers')
-      .insert([{ order_id: orderId, is_launched: true }]);
+    .from('automation_triggers')
+    .insert([{ order_id: orderId, is_launched: true }]);
 
-    if (insertError) {
+    if (insertError) {  
       console.error('Insert error:', insertError);
       return NextResponse.json({ message: 'Insert failed' }, { status: 500 });
     }

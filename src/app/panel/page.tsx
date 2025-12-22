@@ -6,6 +6,8 @@ import { User, Phone, Mail, Calendar, Package, Clock, ChevronRight, X, Building2
 import { useUserData } from '../hooks/useUserData';
 import { upsertUserProfile } from '../api/user/userApi'; // Import your update function
 import { UpdateUserProfileData } from "../api/user/userApi";
+import { Service } from "../api/user/userApi";
+import {supabase} from "../contexts/AuthContext";
 
 export default function Panel() {
     const { user } = useAuth();
@@ -35,6 +37,58 @@ export default function Panel() {
             country: 'Polska'
         }
     });
+
+    const handleRetryPayment = async (service: Service) => {
+        const { data: ordersData, error } = await supabase
+              .from('orders')
+              .select(`
+                id,
+                status,
+                created_at,
+                paid_at,
+                stripe_customer_id,
+                order_items (
+                  id,
+                  name,
+                  price,
+                  quantity
+                )
+              `)
+              .eq("id", service.orderId)
+              .eq('user_id', user?.id)
+              .in('status', ['active', 'pending']);
+        if (error || !ordersData || ordersData.length === 0) {
+            console.error('No order found or error:', error);
+            return;
+        }        
+        
+         const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        orderId: ordersData[0].id,
+        customerId: user?.id,
+        customerStripeId: ordersData[0].stripe_customer_id || null, // Assuming service has this
+        items: ordersData[0].order_items, // Use the order items from the fetched data
+        userInfo: {
+            userId: user?.id,
+            email: user?.email,
+            name: 'Customer',
+        }
+        }),
+    });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Stripe checkout error:', errorData);
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { sessionUrl } = await response.json();
+      
+      // Redirect to Stripe
+      window.location.href = sessionUrl;
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -92,7 +146,7 @@ export default function Panel() {
     const getStatusText = (status: string) => {
         switch (status) {
             case 'active': return 'Aktywne';
-            case 'pending': return 'Oczekujące';
+            case 'pending': return 'Opłać Ponownie';
             case 'completed': return 'Zakończone';
             case 'cancelled': return 'Anulowane';
             default: return status;
@@ -172,7 +226,7 @@ export default function Panel() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* User Profile Card */}
+
                         <div className="lg:col-span-1">
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <div className="flex items-center mb-6">
@@ -241,11 +295,24 @@ export default function Panel() {
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center space-x-3">
-                                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getServiceStatusColor(service.status)}`}>
+                                                        {getStatusText(service.status) === "Opłać Ponownie" ? (
+                                                            <button
+                                                            onClick={() => handleRetryPayment(service)} // your function to retry payment
+                                                            className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition 
+                                                                        ${getServiceStatusColor(service.status)} hover:opacity-80`}
+                                                            >
                                                             {getStatusText(service.status)}
-                                                        </span>
-                                                        <span className="font-bold text-gray-900">{service.price} zł</span>
-                                                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                                                            </button>
+                                                        ) : (
+                                                            <span
+                                                            className={`px-3 py-1 rounded-full text-xs font-medium 
+                                                                        ${getServiceStatusColor(service.status)}`}
+                                                            >
+                                                            {getStatusText(service.status)}
+                                                            </span>
+                                                        )}
+                                                            <span className="font-bold text-gray-900">{service.price} zł</span>
+                                                            <ChevronRight className="w-4 h-4 text-gray-400" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -320,7 +387,6 @@ export default function Panel() {
                         </div>
 
                         <div className="p-6">
-                            {/* Company Information Section */}
                             <div className="mb-8">
                                 <div className="flex items-center mb-4">
                                     <Building2 className="w-5 h-5 text-blue-600 mr-2" />
@@ -384,7 +450,6 @@ export default function Panel() {
                                 </div>
                             </div>
 
-                            {/* Address Section */}
                             <div className="mb-8">
                                 <div className="flex items-center mb-4">
                                     <MapPin className="w-5 h-5 text-blue-600 mr-2" />
@@ -450,7 +515,6 @@ export default function Panel() {
                                 </div>
                             </div>
 
-                            {/* Contact Person Section */}
                             <div className="mb-8">
                                 <div className="flex items-center mb-4">
                                     <User className="w-5 h-5 text-blue-600 mr-2" />
@@ -516,7 +580,6 @@ export default function Panel() {
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
                             <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                                 <button
                                     type="button"

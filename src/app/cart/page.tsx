@@ -32,7 +32,7 @@ export default function CartPage() {
     router.push('/checkout');
   };
 
-  const goBack = () => {
+  const goBack = () : any => {
     router.back();
   };
 
@@ -48,7 +48,6 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-custom-beige py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="flex items-center mb-8">
           <button
             onClick={goBack}
@@ -82,7 +81,6 @@ export default function CartPage() {
             </div>
           ) : (
             <>
-              {/* Cart Items */}
               <div className="divide-y divide-gray-200">
                 {cart.map((item) => (
                   <div key={item.serviceId} className="p-6">
@@ -117,7 +115,6 @@ export default function CartPage() {
                           </p>
                         </div>
 
-                        {/* Remove Button */}
                         <button
                           onClick={() => removeFromCart(item.serviceId)}
                           className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"

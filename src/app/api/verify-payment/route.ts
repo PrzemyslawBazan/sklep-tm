@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
             contact_first_name,
             contact_last_name,
             contact_phone,
+            nip,
             addresses (
               street,
               city,

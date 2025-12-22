@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useClearCart } from '../contexts/CartContext';
 
@@ -11,14 +11,16 @@ function SuccessContent() {
   const clearCart = useClearCart();
   const [loading, setLoading] = useState(true);
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const hasVerified = useRef(false);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     console.log('Session ID:', sessionId);
     
-    if (sessionId) {
+    if (sessionId && !hasVerified.current) {
       verifyPayment(sessionId);
-    } else {
+      hasVerified.current = true;
+    } else if (!sessionId) {
       console.log('No session ID found, redirecting...');
       router.push('/');
     }
@@ -213,7 +215,6 @@ function SuccessContent() {
   );
 }
 
-// Main component with Suspense boundary
 export default function SuccessPage() {
   return (
     <Suspense 

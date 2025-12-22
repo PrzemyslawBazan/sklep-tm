@@ -36,7 +36,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
+// 
   const handleGoogleSignIn = async (): Promise<void> => {
     setError('');
     setLoading(true);
@@ -106,7 +106,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right side with login form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
           <div className="text-center mb-8">
@@ -118,7 +117,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-600 text-sm">{error}</p>
@@ -167,7 +165,6 @@ export default function LoginPage() {
               </div>  
             </div>
 
-            {/* Remember me and forgot password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
@@ -189,7 +186,6 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Main Login/Register Button */}
             <button
               type="submit"
               disabled={loading}
@@ -208,7 +204,6 @@ export default function LoginPage() {
               )}
             </button>
 
-            {/* Toggle between Login/Register */}
             <div className="text-center">
               <button
                 type="button"
@@ -219,7 +214,6 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
@@ -229,7 +223,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Social login buttons */}
             <div className="space-y-3">
               <button
                 type="button"

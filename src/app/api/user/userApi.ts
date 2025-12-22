@@ -23,6 +23,7 @@ export interface UserProfile {
 
 export interface Service {
   id: string;
+  orderId: string;
   name: string;
   status: 'active' | 'pending' | 'completed';
   startDate: Date;
@@ -264,6 +265,7 @@ export const fetchCurrentServices = async (user: User | null): Promise<Service[]
       order.order_items?.forEach(item => {
         services.push({
           id: item.id,
+          orderId: order.id,
           name: item.name || 'Usługa',
           status: order.status as 'active' | 'pending' | 'completed',
           startDate: new Date(order.created_at),
