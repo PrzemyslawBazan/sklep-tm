@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
       line_items: lineItems,
       customer: stripeCustomerId, // FIXED: was customerStripeId, now stripeCustomerId
       mode: 'payment',
-      success_url: `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:3000/checkout`,
+      success_url: `https://sklep-tm.vercel.app//success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `https://sklep-tm.vercel.app/checkout`,
       metadata: {
         orderId,
       },
