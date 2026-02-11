@@ -12,6 +12,7 @@ function SuccessContent() {
   const [loading, setLoading] = useState(true);
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const hasVerified = useRef(false);
+  const [date, setDate] = useState<string>();
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -85,6 +86,7 @@ function SuccessContent() {
       
       if (data.success) {
         console.log('Payment verified, order details:', data.order);
+        setDate(data.order.paid_at)
         setOrderDetails(data.order);
         await sendRequest(data.order);
         // Clear cart using Zustand instead of localStorage
