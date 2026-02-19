@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         enabled: true,
       },
     });
-
+    // make sure it finishes
     console.log('Stripe session created successfully:', session.id);
     return NextResponse.json({ sessionUrl: session.url });
   } catch (error) {
