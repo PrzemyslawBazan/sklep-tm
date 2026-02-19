@@ -162,8 +162,8 @@ export default function Home() {
                 Jako stały klient Tax&Money zyskujesz rabat 20% na wszystkie nasze usługi
               </p>
             </div>
-            <button className="bg-blue-600 text-white md:px-8 px-4 md:py-3 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap md:text-base text-sm">
-              Zleć księgowość i zdobądź rabaty!
+            <button className="bg-blue-600 text-white md:px-8 px-4 md:py-3 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap md:text-base text-sm" >
+              <a href='https://taxm.pl/'>Zleć księgowość i zdobądź rabaty!</a>
             </button>
           </div>
         </div>
