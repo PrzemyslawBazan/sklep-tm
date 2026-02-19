@@ -6,6 +6,7 @@ import NOTEPAD from '../utils/img/notepad.png'
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useMergeGuestCartAndSync } from '../contexts/CartContext';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<boolean>(false)
   const { signIn, signUp, signInWithGoogle, user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const mergeGuestCartAndSync = useMergeGuestCartAndSync();
+
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
@@ -24,10 +27,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      let loggedInUser;
       if (isSignUp) {
-        await signUp(login, password);
+        loggedInUser = await signUp(login, password);
       } else {
-        await signIn(login, password);
+        loggedInUser = await signIn(login, password);
+      }
+
+       if (loggedInUser?.user?.id) {
+        await mergeGuestCartAndSync(loggedInUser?.user?.id);
       }
       router.push('/panel');
     } catch (error: any) {

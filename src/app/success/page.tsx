@@ -3,10 +3,12 @@
 import { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useClearCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 
 // Separate component for the content that uses useSearchParams
 function SuccessContent() {
   const router = useRouter();
+  const { user } = useAuth()
   const searchParams = useSearchParams();
   const clearCart = useClearCart();
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,7 @@ function SuccessContent() {
     if (sessionId && !hasVerified.current) {
       verifyPayment(sessionId);
       hasVerified.current = true;
+      clearCart(user?.id)
     } else if (!sessionId) {
       console.log('No session ID found, redirecting...');
       router.push('/');

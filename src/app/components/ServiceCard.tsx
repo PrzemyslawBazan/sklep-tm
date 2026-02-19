@@ -4,15 +4,16 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ServiceImage from '../utils/img/service.png'
 import {AddToCartButton} from '@/app/types/index'
+import { useAuth } from '../contexts/AuthContext';
 
 interface ServiceCardProps {
   service: Service;
-  onAddToCart: (service: Service) => void;
+  onAddToCart: (service: Service, userId?: string) => void;
 }
 
 export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) {
   const router = useRouter();
-
+  const { user} = useAuth()
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pl-PL', {
       minimumFractionDigits: 0,
@@ -32,7 +33,7 @@ export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) 
   };
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onAddToCart(service);
+    onAddToCart(service, user?.id);
   };
 
   return (

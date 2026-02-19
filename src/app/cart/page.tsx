@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Trash2, Plus, Minus, ShoppingCart, ChevronRight } from 'lucide-react';
 import { useCart, useCartActions, useTotalItems, useIsCartHydrated } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function CartPage() {
   const cart = useCart();
@@ -11,6 +12,7 @@ export default function CartPage() {
   const totalItems = useTotalItems();
   const isHydrated = useIsCartHydrated();
   const router = useRouter();
+  const { user } = useAuth()
 
   const calculateTotals = () => {
     const gross = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -122,7 +124,7 @@ export default function CartPage() {
                       <div className="col-span-3 flex justify-center">
                         <div className="inline-flex items-center border border-[#8A8886] rounded-sm">
                           <button
-                            onClick={() => updateQuantity(item.serviceId, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.serviceId, item.quantity - 1, user?.id)}
                             className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
                           >
                             <Minus className="w-3 h-3" />
@@ -131,7 +133,7 @@ export default function CartPage() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.serviceId, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.serviceId, item.quantity + 1, user?.id)}
                             className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
                           >
                             <Plus className="w-3 h-3" />
@@ -149,7 +151,7 @@ export default function CartPage() {
                       {/* Remove Button */}
                       <div className="col-span-1 text-right">
                         <button
-                          onClick={() => removeFromCart(item.serviceId)}
+                          onClick={() => removeFromCart(item.serviceId, user?.id)}
                           className="p-1.5 text-[#A19F9D] hover:text-[#A4262C] hover:bg-[#FDE7E9] rounded-sm transition-colors"
                           title="Usuń z koszyka"
                         >
@@ -169,7 +171,7 @@ export default function CartPage() {
                       <textarea
                         id={`note-${item.serviceId}`}
                         value={item.note || ''}
-                        onChange={(e) => updateNote(item.serviceId, e.target.value)}
+                        onChange={(e) => updateNote(item.serviceId, e.target.value, user?.id)}
                         placeholder="Dodaj szczególne wymagania lub uwagi..."
                         rows={2}
                         className="w-full px-3 py-2 text-sm text-[#323130] bg-white border border-[#8A8886] rounded-sm placeholder:text-[#A19F9D] focus:outline-none focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] resize-none"

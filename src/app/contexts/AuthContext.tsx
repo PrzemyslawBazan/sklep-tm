@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useRe
 import { User } from '@supabase/supabase-js';
 import { AuthContextType } from '../types/auth';
 import { supabase } from '../lib/supabase';
+import { useClearCartOnLogout } from './CartContext';
+import { useCartStore } from './CartContext';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -216,9 +218,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       sessionStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify(cache));
     }
     lastCheckedUserRef.current = null;
-    
+
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+
+    useCartStore.getState().clearCartOnLogout();
   };
 
   const refreshClaims = async () => {

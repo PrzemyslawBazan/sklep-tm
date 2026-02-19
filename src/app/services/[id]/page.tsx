@@ -4,14 +4,17 @@ import { useParams, useRouter } from 'next/navigation';
 import { useServices } from '../../hooks/useServices';
 import { useAddToCart, useTotalItems } from '../../contexts/CartContext';
 
+import { useAuth } from '@/app/contexts/AuthContext';
 import Image from 'next/image';
 import serviceImage from '../../utils/img/service.png';
 import { AddToCartButton } from '@/app/components/Buttons/CartButton/AddToCartButton';
 import { useState } from 'react';
 
+
 export default function ServiceDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user} = useAuth();
   const { data: services = [], isLoading, isError } = useServices();
   const [isHovered, setIsHovered] = useState(false);
   const addToCart = useAddToCart();
@@ -159,7 +162,7 @@ export default function ServiceDetailPage() {
               </div>
 
               <AddToCartButton
-                onClick={() => addToCart(service)}
+                onClick={() => addToCart(service, user?.id)}
                 ariaLabel={`Dodaj usługę ${service.name} do koszyka`}
               />
 

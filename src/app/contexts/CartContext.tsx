@@ -1,45 +1,45 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Service } from '../types/index';
+import supabase from '../lib/supabase';
 
 interface CartStore {
-  // State
   cart: CartItem[];
   isHydrated: boolean;
-  
-  // Actions
-  addToCart: (service: Service) => void;
-  removeFromCart: (serviceId: string) => void;
-  updateQuantity: (serviceId: string, quantity: number) => void;
-  updateNote: (serviceId: string, note: string) => void;
-  clearCart: () => void;
-  
-  // Internal action for hydration
+  isSyncing: boolean;
+
+  addToCart: (service: Service, userId?: string) => Promise<void>;
+  removeFromCart: (serviceId: string, userId?: string) => Promise<void>;
+  updateQuantity: (serviceId: string, quantity: number, userId?: string) => Promise<void>;
+  updateNote: (serviceId: string, note: string, userId?: string) => Promise<void>;
+  clearCart: (userId?: string) => Promise<void>;
+
+  syncCartFromDB: (userId: string) => Promise<void>;
+  mergeGuestCartAndSync: (userId: string) => Promise<void>;
+  clearCartOnLogout: () => void;
+
   setHydrated: () => void;
 }
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      // Initial state
       cart: [],
       isHydrated: false,
+      isSyncing: false,
 
-      // Actions
-      addToCart: (service: Service) => {
+      addToCart: async (service: Service, userId?: string) => {
         set((state) => {
           const existing = state.cart.find(item => item.serviceId === service.id);
-          
           if (existing) {
             return {
               cart: state.cart.map(item =>
                 item.serviceId === service.id
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
-              )
+              ),
             };
           }
-          
           return {
             cart: [...state.cart, {
               serviceId: service.id,
@@ -47,88 +47,177 @@ export const useCartStore = create<CartStore>()(
               price: service.price,
               quantity: 1,
               addedAt: new Date(),
-            }]
+            }],
           };
         });
+        console.log("HELLO does it work")
+        if (!userId) return;
+
+        const updatedItem = get().cart.find(item => item.serviceId === service.id);
+        await supabase.from('cart_items').upsert(
+          {
+            user_id: userId,
+            product_id: service.id,
+            name: service.name,
+            price: service.price,
+            quantity: updatedItem?.quantity ?? 1,
+          },
+          { onConflict: 'user_id,product_id' }
+        );
       },
 
-      removeFromCart: (serviceId: string) => {
+      removeFromCart: async (serviceId: string, userId?: string) => {
         set((state) => ({
-          cart: state.cart.filter(item => item.serviceId !== serviceId)
+          cart: state.cart.filter(item => item.serviceId !== serviceId),
         }));
+
+        if (!userId) return;
+
+        await supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', userId)
+          .eq('product_id', serviceId);
       },
 
-      updateQuantity: (serviceId: string, quantity: number) => {
+      updateQuantity: async (serviceId: string, quantity: number, userId?: string) => {
         if (quantity <= 0) {
-          get().removeFromCart(serviceId);
+          get().removeFromCart(serviceId, userId);
           return;
         }
-        
+
         set((state) => ({
           cart: state.cart.map(item =>
-            item.serviceId === serviceId
-              ? { ...item, quantity }
-              : item
-          )
+            item.serviceId === serviceId ? { ...item, quantity } : item
+          ),
         }));
+
+        if (!userId) return;
+
+        await supabase
+          .from('cart_items')
+          .update({ quantity })
+          .eq('user_id', userId)
+          .eq('product_id', serviceId);
       },
 
-      updateNote: (serviceId: string, note: string) => {
+      updateNote: async (serviceId: string, note: string, userId?: string) => {
         set((state) => ({
           cart: state.cart.map(item =>
-            item.serviceId === serviceId
-              ? { ...item, note }
-              : item
-          )
+            item.serviceId === serviceId ? { ...item, note } : item
+          ),
         }));
+
+        if (!userId) return;
+
+        await supabase
+          .from('cart_items')
+          .update({ note })
+          .eq('user_id', userId)
+          .eq('product_id', serviceId);
       },
 
-      clearCart: () => {
+      clearCart: async (userId?: string) => {
         set({ cart: [] });
+
+        if (!userId) return;
+
+        await supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', userId);
       },
 
-      // Hydration action
-      setHydrated: () => {
-        set({ isHydrated: true });
+      syncCartFromDB: async (userId: string) => {
+        set({ isSyncing: true });
+
+        const { data, error } = await supabase
+          .from('cart_items')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (error) {
+          console.error('Failed to sync cart:', error);
+          set({ isSyncing: false });
+          return;
+        }
+
+        const cart: CartItem[] = (data ?? []).map((row) => ({
+          serviceId: row.product_id,
+          name: row.name,
+          price: row.price,
+          quantity: row.quantity,
+          note: row.note ?? undefined,
+          addedAt: new Date(row.created_at),
+        }));
+
+        set({ cart, isSyncing: false });
       },
+
+      mergeGuestCartAndSync: async (userId: string) => {
+        set({ isSyncing: true });
+        const guestCart = get().cart;
+
+        if (guestCart.length > 0) {
+          const upsertPayload = guestCart.map((item) => ({
+            user_id: userId,
+            product_id: item.serviceId,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            note: item.note ?? null,
+          }));
+
+          await supabase
+            .from('cart_items')
+            .upsert(upsertPayload, { onConflict: 'user_id,product_id' });
+        }
+
+        await get().syncCartFromDB(userId);
+      },
+
+      clearCartOnLogout: () => {
+        set({ cart: [], isSyncing: false });
+        localStorage.removeItem('cart-storage');
+      },
+
+      setHydrated: () => set({ isHydrated: true }),
     }),
     {
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
-        // This runs after rehydration is complete
         state?.setHydrated();
       },
-      // Only persist the cart array, not the hydration state
       partialize: (state) => ({ cart: state.cart }),
     }
   )
 );
 
-// Selector hooks for better performance
+// ─── SELECTOR HOOKS ──────────────────────────────────────────────────────────
+
 export const useCart = () => useCartStore((state) => state.cart);
-
 export const useIsCartHydrated = () => useCartStore((state) => state.isHydrated);
+export const useIsSyncing = () => useCartStore((state) => state.isSyncing);
 
-// Individual action hooks to prevent object creation
 export const useAddToCart = () => useCartStore((state) => state.addToCart);
 export const useRemoveFromCart = () => useCartStore((state) => state.removeFromCart);
 export const useUpdateQuantity = () => useCartStore((state) => state.updateQuantity);
 export const useUpdateNote = () => useCartStore((state) => state.updateNote);
 export const useClearCart = () => useCartStore((state) => state.clearCart);
 
-// Individual computed value hooks
-export const useTotalItems = () => useCartStore((state) => 
+export const useSyncCartFromDB = () => useCartStore((state) => state.syncCartFromDB);
+export const useMergeGuestCartAndSync = () => useCartStore((state) => state.mergeGuestCartAndSync);
+export const useClearCartOnLogout = () => useCartStore((state) => state.clearCartOnLogout);
+
+export const useTotalItems = () => useCartStore((state) =>
   state.cart.reduce((sum, item) => sum + item.quantity, 0)
 );
-
-export const useTotalPrice = () => useCartStore((state) => 
+export const useTotalPrice = () => useCartStore((state) =>
   state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 );
-
 export const useIsCartEmpty = () => useCartStore((state) => state.cart.length === 0);
 
-// Legacy hooks for backward compatibility (use individual hooks instead)
 export const useCartActions = () => ({
   addToCart: useAddToCart(),
   removeFromCart: useRemoveFromCart(),

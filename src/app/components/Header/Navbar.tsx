@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { navBarAdmin, navBarPath } from './menu.data';
 import LogoSvg from '../../utils/LOGO.svg'; 
 import { AuthButtons } from './AuthButtons';
+import { useClearCartOnLogout } from '@/app/contexts/CartContext';
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth();
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const router = useRouter();
 
+  const clearCartOnLogout = useClearCartOnLogout();
   // Scroll detection for blur effect
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +39,7 @@ export default function Navbar() {
   const handleLogout = async (): Promise<void> => {
     try {
       await logout();
+      clearCartOnLogout();
       setIsMenuOpen(false);
       router.push('/');
     } catch (error) {
