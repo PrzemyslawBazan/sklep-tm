@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { User, Menu, X, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, LogOut, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import Image from 'next/image';
@@ -13,8 +13,17 @@ import { AuthButtons } from './AuthButtons';
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const router = useRouter();
+
+  // Scroll detection for blur effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleAuthClick = (): void => {
     if (user) {
@@ -22,12 +31,13 @@ export default function Navbar() {
     } else {
       router.push('/login');
     }
+    setIsMenuOpen(false);
   };
 
   const handleLogout = async (): Promise<void> => {
     try {
       await logout();
-      setIsUserMenuOpen(false);
+      setIsMenuOpen(false);
       router.push('/');
     } catch (error) {
       console.error('Logout error:', error);
@@ -35,11 +45,22 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-custom-beige px-4 sm:px-6 py-2 relative">
+    <nav 
+      className={`
+        sticky top-0 z-50 w-full px-4 sm:px-6
+        transition-all duration-200
+        ${isScrolled 
+          ? 'bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm' 
+          : 'bg-white border-b border-zinc-100'
+        }
+      `}
+    >
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 sm:space-x-8">
-            <a href="/" className="flex items-center">
+        <div className="flex items-center justify-between h-16">
+          
+          {/* Logo & Nav Links */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center flex-shrink-0">
               <Image 
                 src={LogoSvg}
                 alt="Tax & Money Logo" 
@@ -48,92 +69,165 @@ export default function Navbar() {
                 className="w-[100px] h-[40px] sm:w-[120px] sm:h-[50px] object-contain"
                 priority
               />
-            </a>
-          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            </Link>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-1 ml-10">
               {navBarPath.map((item, index) => (
-                <div key={index} className="text-gray-700 hover:text-gray-900 font-medium">
-                  <Link href={item.url}>
-                    {item.name}
-                  </Link>
-                </div>
+                <Link 
+                  key={index} 
+                  href={item.url}
+                  className="px-3 py-2 text-sm font-medium text-zinc-600 rounded-md
+                           transition-colors duration-150
+                           hover:text-zinc-900 hover:bg-zinc-100"
+                >
+                  {item.name}
+                </Link>
               ))}
               {isAdmin && navBarAdmin.map((item, index) => (
-                <div key={index} className="text-gray-700 hover:text-gray-900 font-medium">
-                  <Link href={item.url}>
-                    {item.name}
-                  </Link>
-                </div>
+                <Link 
+                  key={`admin-${index}`} 
+                  href={item.url}
+                  className="px-3 py-2 text-sm font-medium text-zinc-600 rounded-md
+                           transition-colors duration-150
+                           hover:text-zinc-900 hover:bg-zinc-100"
+                >
+                  {item.name}
+                </Link>
               ))}
             </div>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-4">
-            <Link href={"https://taxm.pl/konsultacja/"} className="bg-blue-600 text-white px-4 xl:px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-colors text-sm xl:text-base">
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center gap-2">
+            <Link 
+              href="https://taxm.pl/konsultacja/" 
+              className="inline-flex items-center justify-center h-9 px-4
+                       bg-blue-600 text-white text-sm font-medium
+                       rounded-md
+                       transition-colors duration-150
+                       hover:bg-blue-700"
+            >
               Konsultacje księgowe
             </Link>
             
             <AuthButtons />
           </div>
 
+          {/* Mobile Menu Button - Animated Hamburger */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden text-gray-700 p-2"
+            className="lg:hidden inline-flex items-center justify-center h-10 w-10
+                     text-zinc-700 rounded-md
+                     transition-colors duration-150
+                     hover:bg-zinc-100"
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            <div className="relative w-5 h-4">
+              <span
+                className={`absolute left-0 w-5 h-0.5 bg-current rounded-full transition-all duration-200
+                  ${isMenuOpen ? 'top-[7px] rotate-45' : 'top-0'}`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] w-5 h-0.5 bg-current rounded-full transition-all duration-200
+                  ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}
+              />
+              <span
+                className={`absolute left-0 w-5 h-0.5 bg-current rounded-full transition-all duration-200
+                  ${isMenuOpen ? 'top-[7px] -rotate-45' : 'top-[14px]'}`}
+              />
+            </div>
           </button>
         </div>
 
-        {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50">
-            <div className="px-4 py-4 space-y-3">
-              {navBarPath.map((item, index) => (
-                <div key={index} className="text-gray-700 hover:text-gray-900 font-medium">
-                  <Link href={item.url}>
-                    {item.name}
-                  </Link>
+        {/* Mobile Menu */}
+        <div
+          className={`
+            lg:hidden overflow-hidden transition-all duration-200 ease-out
+            ${isMenuOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'}
+          `}
+        >
+          <div className="pt-2 space-y-1">
+            {navBarPath.map((item, index) => (
+              <Link 
+                key={index} 
+                href={item.url}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between px-3 py-3
+                         text-sm font-medium text-zinc-700 rounded-md
+                         transition-colors duration-150
+                         hover:bg-zinc-100"
+              >
+                {item.name}
+                <ChevronRight className="w-4 h-4 text-zinc-400" />
+              </Link>
+            ))}
+            {isAdmin && (
+              <>
+                <div className="pt-3 pb-1 px-3">
+                  <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    Admin
+                  </span>
                 </div>
-              ))}
-              {isAdmin && navBarAdmin.map((item, index) => (
-                <div key={index} className="text-gray-700 hover:text-gray-900 font-medium">
-                  <Link href={item.url}>
-                    {item.name}
-                  </Link>
-                </div>
-              ))}
-              
-              <div className="pt-4 space-y-3 border-t">
-                <button className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-full font-medium hover:bg-blue-700 transition-colors" onClick={() => {router.push("https://taxm.pl/kontakt"); }}>
-                  Konsultacje księgowe
-                </button>
-                
-                <button 
-                  onClick={handleAuthClick}
-                  className="w-full bg-red-500 text-white px-4 py-2.5 rounded-full font-medium hover:bg-red-600 transition-colors flex items-center justify-center space-x-2"
-                >
-                  <User className="w-5 h-5" />
-                  <span>{user ? 'Twoje konto' : 'Zaloguj się'}</span>
-                </button>
-
-                {user && (
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full bg-gray-600 text-white px-4 py-2.5 rounded-full font-medium hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2"
+                {navBarAdmin.map((item, index) => (
+                  <Link 
+                    key={`admin-${index}`} 
+                    href={item.url}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center justify-between px-3 py-3
+                             text-sm font-medium text-zinc-700 rounded-md
+                             transition-colors duration-150
+                             hover:bg-zinc-100"
                   >
-                    <LogOut className="w-5 h-5" />
-                    <span>Wyloguj się</span>
-                  </button>
-                )}
-              </div>
+                    {item.name}
+                    <ChevronRight className="w-4 h-4 text-zinc-400" />
+                  </Link>
+                ))}
+              </>
+            )}
+            
+            {/* Mobile Action Buttons */}
+            <div className="pt-4 mt-2 space-y-2 border-t border-zinc-100">
+              <Link 
+                href="https://taxm.pl/konsultacja/"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-center w-full h-11
+                         bg-blue-600 text-white text-sm font-medium
+                         rounded-md
+                         transition-colors duration-150
+                         hover:bg-blue-700"
+              >
+                Konsultacje księgowe
+              </Link>
+              
+              <button 
+                onClick={handleAuthClick}
+                className="flex items-center justify-center gap-2 w-full h-11
+                         bg-white text-zinc-700 text-sm font-medium
+                         border border-zinc-300 rounded-md
+                         transition-colors duration-150
+                         hover:bg-zinc-50 hover:border-zinc-400"
+              >
+                <User className="w-4 h-4" />
+                <span>{user ? 'Twoje konto' : 'Zaloguj się'}</span>
+              </button>
+
+              {user && (
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 w-full h-11
+                           text-zinc-600 text-sm font-medium rounded-md
+                           transition-colors duration-150
+                           hover:bg-zinc-100"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Wyloguj się</span>
+                </button>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
 }
-

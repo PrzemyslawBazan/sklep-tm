@@ -7,16 +7,16 @@ interface SubmitButtonProps {
 
 export default function SubmitButton({ isSubmitting, onClick }: SubmitButtonProps) {
     return (
-        <div className="flex justify-end pt-6 border-t border-gray-200">
+        <div className="flex justify-end pt-5 border-t border-[#EDEBE9]">
             <button
                 type="button"
                 onClick={onClick}
                 disabled={isSubmitting}
-                className="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="inline-flex items-center px-5 py-2 bg-[#0078D4] hover:bg-[#106EBE] disabled:bg-[#C8C6C4] disabled:cursor-not-allowed text-white text-sm font-semibold rounded-sm transition-colors focus:outline-none focus:ring-1 focus:ring-[#0078D4] focus:ring-offset-1"
             >
                 {isSubmitting ? (
                     <>
-                        <div className="animate-spin -ml-1 mr-3 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                        <div className="animate-spin -ml-0.5 mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
                         Tworzenie...
                     </>
                 ) : (

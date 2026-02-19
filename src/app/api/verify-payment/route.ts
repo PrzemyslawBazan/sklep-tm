@@ -18,7 +18,9 @@ export async function POST(request: NextRequest) {
       const { orderId, customerId } = session.metadata!;
       
       console.log('Payment successful for order:', orderId);
-
+        const paid_at = new Date().toLocaleString("sv-SE", {
+      timeZone: "Europe/Warsaw"
+    });
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .update({
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
           stripe_payment_intent_id: session.payment_intent as string,
           stripe_customer_id: session.customer as string,
           status: 'completed',
-          paid_at: new Date().toISOString(),
+          paid_at: paid_at,
         })
         .eq('id', orderId)
         .select()

@@ -9,7 +9,7 @@ export default function DescriptionFields({ formData, onInputChange }: Descripti
     return (
         <>
             <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="description" className="block text-xs font-semibold text-[#323130] mb-1">
                     Krótki opis
                 </label>
                 <input
@@ -18,12 +18,12 @@ export default function DescriptionFields({ formData, onInputChange }: Descripti
                     name="description"
                     value={formData.description}
                     onChange={onInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    className="w-full px-3 py-2 text-sm text-[#323130] bg-white border border-[#8A8886] rounded-sm focus:outline-none focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] placeholder:text-[#A19F9D]"
                     placeholder="Krótki opis usługi"
                 />
             </div>
             <div>
-                <label htmlFor="full_description" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="full_description" className="block text-xs font-semibold text-[#323130] mb-1">
                     Pełny opis
                 </label>
                 <textarea
@@ -32,7 +32,7 @@ export default function DescriptionFields({ formData, onInputChange }: Descripti
                     value={formData.full_description}
                     onChange={onInputChange}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                    className="w-full px-3 py-2 text-sm text-[#323130] bg-white border border-[#8A8886] rounded-sm focus:outline-none focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] placeholder:text-[#A19F9D] resize-none"
                     placeholder="Szczegółowy opis usługi"
                 />
             </div>

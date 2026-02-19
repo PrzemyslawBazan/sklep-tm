@@ -178,7 +178,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="">
             <FormHeader />
             
             <div className="p-6 space-y-6">

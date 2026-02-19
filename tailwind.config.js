@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'custom-beige': '#EEEAE1',
-        
+        'custom-beige': '#FBFAF8',
+        'tm-btn-primary': '#263DC0'
       },
     },
   },

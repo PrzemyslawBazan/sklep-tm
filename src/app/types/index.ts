@@ -97,3 +97,30 @@ export interface Order {
   status: 'active' | 'completed' | 'cancelled';
   createdAt: Date;
 }
+
+export type AddToCartState = "idle" | "adding" | "success";
+
+
+export interface UseAddToCartAnimationOptions {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  addingDuration?: number;
+  successDuration?: number;
+}
+
+export interface UseAddToCartAnimationReturn {
+  state: AddToCartState;
+  handleClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isDisabled: boolean;
+}
+
+export interface AddToCartButtonProps {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  ariaLabel?: string;
+  className?: string;
+  idleText?: string;
+  successText?: string;
+}
+
+export { AddToCartButton } from "../components/Buttons/CartButton/AddToCartButton";
+export { CartIcon, BoxIcon, CheckIcon } from "../components/Buttons/CartButton/icons";
+export { useAddToCartAnimation } from "../components/Buttons/CartButton/AddToCartAnimation";

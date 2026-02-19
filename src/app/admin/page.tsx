@@ -12,9 +12,9 @@ import {
     Trash2, 
     ChevronLeft, 
     ChevronRight, 
-    Package, 
-    CheckCircle, 
-    TrendingUp,
+    Layers,
+    Zap,
+    History,
     Loader2,
     Lock
 } from 'lucide-react';
@@ -47,11 +47,11 @@ export default function AdminPage() {
     };
 
     const getNumberOfTotalServices = async () => {
-       const { count, error } = await supabase
-        .from('services')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
-         if (error) {
+        const { count, error } = await supabase
+            .from('services')
+            .select('*', { count: 'exact', head: true })
+            .eq('is_active', true);
+        if (error) {
             console.error('Error fetching service count:', error);
             return;
         }
@@ -60,10 +60,10 @@ export default function AdminPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-[#FAF9F8] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                    <div className="text-sm text-gray-600">Loading...</div>
+                    <Loader2 className="w-5 h-5 text-[#0078D4] animate-spin" />
+                    <p className="text-sm text-[#605E5C]">Loading...</p>
                 </div>
             </div>
         );
@@ -71,10 +71,10 @@ export default function AdminPage() {
 
     if (!user || !isAdmin) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-[#FAF9F8] flex items-center justify-center">
                 <div className="text-center">
-                    <Lock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <div className="text-lg text-gray-600">Unauthorized access</div>
+                    <Lock className="w-10 h-10 text-[#A19F9D] mx-auto mb-3" />
+                    <p className="text-[#323130]">Unauthorized access</p>
                 </div>
             </div>
         );
@@ -88,78 +88,96 @@ export default function AdminPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-[#FAF9F8] flex font-[system-ui]">
+            {/* Sidebar */}
             <aside
                 className={`${
-                    sidebarOpen ? 'w-64' : 'w-20'
-                } bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col`}
+                    sidebarOpen ? 'w-60' : 'w-14'
+                } bg-[#F3F2F1] border-r border-[#EDEBE9] transition-all duration-200 flex flex-col`}
             >
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                        {sidebarOpen && (
-                            <h1 className="text-xl font-semibold text-gray-800">Admin Panel</h1>
+                {/* Header */}
+                <div className="h-12 px-4 flex items-center justify-between border-b border-[#EDEBE9]">
+                    {sidebarOpen && (
+                        <span className="text-sm font-semibold text-[#323130]">Admin Panel</span>
+                    )}
+                    <button
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        className={`p-1.5 hover:bg-[#E1DFDD] rounded transition-colors ${!sidebarOpen && 'mx-auto'}`}
+                        aria-label="Toggle sidebar"
+                    >
+                        {sidebarOpen ? (
+                            <ChevronLeft className="w-4 h-4 text-[#605E5C]" />
+                        ) : (
+                            <ChevronRight className="w-4 h-4 text-[#605E5C]" />
                         )}
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            aria-label="Toggle sidebar"
-                        >
-                            {sidebarOpen ? (
-                                <ChevronLeft className="w-5 h-5 text-gray-600" />
-                            ) : (
-                                <ChevronRight className="w-5 h-5 text-gray-600" />
-                            )}
-                        </button>
-                    </div>
+                    </button>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2">
+                {/* Navigation */}
+                <nav className="flex-1 py-2">
                     {menuItems.map((item) => {
                         const IconComponent = item.icon;
+                        const isActive = activeView === item.id;
                         return (
                             <button
                                 key={item.id}
                                 onClick={() => setActiveView(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                                    activeView === item.id
-                                        ? 'bg-blue-50 text-blue-600 font-medium'
-                                        : 'text-gray-700 hover:bg-gray-50'
-                                }`}
+                                className={`w-full flex items-center gap-3 px-4 py-2 transition-colors relative ${
+                                    isActive
+                                        ? 'bg-[#E1DFDD] text-[#323130]'
+                                        : 'text-[#605E5C] hover:bg-[#E1DFDD]'
+                                } ${!sidebarOpen && 'justify-center px-0'}`}
                             >
-                                <IconComponent className="w-5 h-5" />
-                                {sidebarOpen && <span className="text-sm">{item.label}</span>}
+                                {isActive && (
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-[#0078D4] rounded-r" />
+                                )}
+                                <IconComponent className="w-4 h-4 flex-shrink-0" />
+                                {sidebarOpen && (
+                                    <span className="text-sm">{item.label}</span>
+                                )}
                             </button>
                         );
                     })}
                 </nav>
-                <div className="p-4 border-t border-gray-200">
-                    <div className={`flex items-center gap-3 ${!sidebarOpen && 'justify-center'}`}>
-                        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+
+                {/* User */}
+                <div className="border-t border-[#EDEBE9] p-3">
+                    <div className={`flex items-center gap-2.5 ${!sidebarOpen && 'justify-center'}`}>
+                        <div className="w-8 h-8 bg-[#0078D4] rounded-sm flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
                             {user.email?.[0].toUpperCase()}
                         </div>
                         {sidebarOpen && (
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-900 truncate">
-                                    Admin
-                                </div>
-                                <div className="text-xs text-gray-500 truncate">
-                                    {user.email}
-                                </div>
+                            <div className="min-w-0">
+                                <p className="text-sm text-[#323130] truncate">Admin</p>
+                                <p className="text-xs text-[#A19F9D] truncate">{user.email}</p>
                             </div>
                         )}
                     </div>
                 </div>
             </aside>
 
+            {/* Main */}
             <main className="flex-1 overflow-auto">
-                <div className="max-w-6xl mx-auto px-8 py-8">
+                {/* Top bar */}
+                <div className="h-12 bg-white border-b border-[#EDEBE9] px-6 flex items-center">
+                    <nav className="flex items-center gap-1.5 text-sm">
+                        <span className="text-[#0078D4] hover:underline cursor-pointer">Home</span>
+                        <ChevronRight className="w-3 h-3 text-[#A19F9D]" />
+                        <span className="text-[#323130]">
+                            {menuItems.find(item => item.id === activeView)?.label}
+                        </span>
+                    </nav>
+                </div>
+
+                <div className="p-6">
                     <SuccessMessage show={showSuccess} />
 
-                    <div className="mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900">
+                    {/* Page header */}
+                    <div className="mb-6">
+                        <h1 className="text-xl font-semibold text-[#323130]">
                             {menuItems.find(item => item.id === activeView)?.label}
-                        </h2>
-                        <p className="mt-2 text-gray-600">
+                        </h1>
+                        <p className="text-sm text-[#605E5C] mt-1">
                             {activeView === 'overview' && 'Zarządzaj usługami i przeglądaj analizy'}
                             {activeView === 'add' && 'Add a new product to your catalog'}
                             {activeView === 'update' && 'Update existing product information'}
@@ -167,55 +185,77 @@ export default function AdminPage() {
                         </p>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                        {activeView === 'overview' && (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="p-6 bg-blue-50 rounded-lg">
-                                        <Package className="w-8 h-8 text-blue-600 mb-2" />
-                                        <div className="text-2xl font-bold text-gray-900">0</div>
-                                        <div className="text-sm text-gray-600">Pełna liczba usług</div>
-                                    </div>
-                                    <div className="p-6 bg-green-50 rounded-lg">
-                                        <CheckCircle className="w-8 h-8 text-green-600 mb-2" />
-                                        <div className="text-2xl font-bold text-gray-900">{numberOfActiveServices}</div>
-                                        <div className="text-sm text-gray-600">Aktywne usługi</div>
-                                    </div>
-                                    <div className="p-6 bg-purple-50 rounded-lg">
-                                        <TrendingUp className="w-8 h-8 text-purple-600 mb-2" />
-                                        <div className="text-2xl font-bold text-gray-900">0</div>
-                                        <div className="text-sm text-gray-600">Ostatnie aktualizacje</div>
+                    {/* Content */}
+                    {activeView === 'overview' && (
+                        <div className="space-y-6">
+                            {/* Stats - Azure tile layout */}
+                            <div className="grid grid-cols-3 gap-px bg-[#EDEBE9]">
+                                <div className="bg-white p-5">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <p className="text-xs text-[#605E5C] uppercase tracking-wide">Pełna liczba usług</p>
+                                            <p className="text-3xl font-light text-[#323130] mt-2">0</p>
+                                        </div>
+                                        <Layers className="w-5 h-5 text-[#0078D4]" />
                                     </div>
                                 </div>
-                                <div className="pt-6 text-center text-gray-500">
-                                    <p>Wybierz metodę z panelu bocznego aby rozpocząć.</p>
+                                <div className="bg-white p-5">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <p className="text-xs text-[#605E5C] uppercase tracking-wide">Aktywne usługi</p>
+                                            <p className="text-3xl font-light text-[#323130] mt-2">{numberOfActiveServices}</p>
+                                        </div>
+                                        <Zap className="w-5 h-5 text-[#107C10]" />
+                                    </div>
+                                </div>
+                                <div className="bg-white p-5">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <p className="text-xs text-[#605E5C] uppercase tracking-wide">Ostatnie aktualizacje</p>
+                                            <p className="text-3xl font-light text-[#323130] mt-2">0</p>
+                                        </div>
+                                        <History className="w-5 h-5 text-[#5C2D91]" />
+                                    </div>
                                 </div>
                             </div>
-                        )}
 
-                        {activeView === 'add' && (
+                            {/* Empty state */}
+                            <div className="bg-white border border-[#EDEBE9] p-8">
+                                <div className="text-center">
+                                    <p className="text-sm text-[#605E5C]">Wybierz metodę z panelu bocznego aby rozpocząć.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeView === 'add' && (
+                        <div className="bg-white border border-[#EDEBE9] p-6">
                             <ServiceForm 
                                 onServiceCreated={handleServiceCreated} 
                                 isAdmin={isAdmin} 
                             />
-                        )}
+                        </div>
+                    )}
 
-                        {activeView === 'update' && (
-                            <div className="text-center py-12 text-gray-500">
-                                <Edit className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <p className="text-lg">Zaktualizuj usługę</p>
-                                <p className="text-sm mt-2">Add your update product component here</p>
+                    {activeView === 'update' && (
+                        <div className="bg-white border border-[#EDEBE9] p-8">
+                            <div className="text-center py-8">
+                                <Edit className="w-10 h-10 text-[#A19F9D] mx-auto mb-3" />
+                                <p className="text-[#323130] font-medium">Zaktualizuj usługę</p>
+                                <p className="text-sm text-[#605E5C] mt-1">Add your update product component here</p>
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {activeView === 'delete' && (
-                            <div className="text-center py-12 text-gray-500">
-                                <Trash2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <p className="text-lg">Usuń usługę</p>
-                                <p className="text-sm mt-2">Add your delete product component here</p>
+                    {activeView === 'delete' && (
+                        <div className="bg-white border border-[#EDEBE9] p-8">
+                            <div className="text-center py-8">
+                                <Trash2 className="w-10 h-10 text-[#A19F9D] mx-auto mb-3" />
+                                <p className="text-[#323130] font-medium">Usuń usługę</p>
+                                <p className="text-sm text-[#605E5C] mt-1">Add your delete product component here</p>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
