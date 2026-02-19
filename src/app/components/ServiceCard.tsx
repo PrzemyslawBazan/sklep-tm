@@ -3,6 +3,7 @@ import { Service } from '../types';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ServiceImage from '../utils/img/service.png'
+import {AddToCartButton} from '@/app/types/index'
 
 interface ServiceCardProps {
   service: Service;
@@ -31,8 +32,6 @@ export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) 
   };
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
     onAddToCart(service);
   };
 
@@ -72,13 +71,10 @@ export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) 
             </p>
           </div>
           
-          <button
-            onClick={handleAddToCart}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 whitespace-nowrap"
-            aria-label={`Dodaj usługę ${service.name} do koszyka`}
-          >
-            Dodaj do koszyka
-          </button>
+          <AddToCartButton
+              onClick={handleAddToCart}
+            ariaLabel={`Dodaj usługę ${service.name} do koszyka`}
+            />
         </div>
       </div>
     </div>

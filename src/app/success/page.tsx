@@ -13,7 +13,7 @@ function SuccessContent() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const hasVerified = useRef(false);
   const [date, setDate] = useState<string>();
-
+  const [shortId, setShortId] = useState<string>();
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     console.log('Session ID:', sessionId);
@@ -26,15 +26,22 @@ function SuccessContent() {
       router.push('/');
     }
   }, []); 
+  const shortenOrderId = (order : any) => {
+    console.log(order)
+    if (order.id) {
+      const shorten = order.id.split("-")[4];
+      setShortId(shorten)
+    } else {
+      setShortId("BrakId")
+    }
+  }
   
   const sendRequest = async (orderData : any) => {
   try {
-    // Validate input
     if (!orderData || typeof orderData !== 'object') {
       throw new Error('Invalid orderData: must be a non-null object');
     }
 
-    // Send request to your Next.js API endpoint
     const response = await fetch('/api/n8n', {
       method: 'POST',
       headers: {
@@ -46,7 +53,7 @@ function SuccessContent() {
         order: orderData
       })
     });
-   // const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
@@ -89,7 +96,7 @@ function SuccessContent() {
         setDate(data.order.paid_at)
         setOrderDetails(data.order);
         await sendRequest(data.order);
-        // Clear cart using Zustand instead of localStorage
+        shortenOrderId(data.order);
         clearCart();
       } else {
         console.log('Payment verification failed, redirecting to checkout');
@@ -105,10 +112,10 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center">
-          <div className="h-12 w-12 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin mb-4" />
-          <p className="text-gray-600">Weryfikujemy płatność...</p>
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-stone-800 animate-spin" />
+          <p className="text-sm text-stone-400 tracking-wide">Weryfikujemy płatność…</p>
         </div>
       </div>
     );
@@ -116,17 +123,18 @@ function SuccessContent() {
 
   if (!orderDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white shadow-lg rounded-2xl p-8 text-center max-w-md mx-auto">
-          <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-yellow-100 flex items-center justify-center">
-            <svg className="h-6 w-6 text-yellow-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="bg-white border border-stone-200 shadow-sm rounded-2xl p-10 text-center max-w-sm mx-auto">
+          <div className="mx-auto mb-5 h-12 w-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
+            <svg className="h-5 w-5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p className="text-gray-700 font-medium">Nie znaleziono szczegółów zamówienia</p>
+          <p className="text-stone-700 text-sm font-semibold mb-1">Nie znaleziono zamówienia</p>
+          <p className="text-stone-400 text-xs mb-7">Szczegóły zamówienia są niedostępne.</p>
           <button
             onClick={() => router.push('/')}
-            className="mt-6 inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-2.5 text-white font-medium shadow-sm hover:bg-blue-700 transition-colors"
+            className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-stone-700 active:scale-[0.99] transition-all shadow-md"
           >
             Wróć do strony głównej
           </button>
@@ -141,73 +149,124 @@ function SuccessContent() {
   }, 0) || 0;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-12">
+    <main className="min-h-screen bg-stone-50 py-12">
       <div className="max-w-3xl mx-auto px-4">
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-10 text-center text-white">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-white/15 backdrop-blur flex items-center justify-center">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
+
+          {/* ── Hero banner ─────────────────────────────────────────────── */}
+          <div className="relative bg-stone-900 px-10 py-14 text-center overflow-hidden">
+            {/* Background grid texture */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage:
+                  'repeating-linear-gradient(0deg,transparent,transparent 39px,#fff 39px,#fff 40px),' +
+                  'repeating-linear-gradient(90deg,transparent,transparent 39px,#fff 39px,#fff 40px)',
+              }}
+            />
+            {/* Glow blob */}
+            <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-56 w-56 rounded-full bg-emerald-400 opacity-10 blur-3xl" />
+
+            {/* Rocket */}
+            <div className="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
+              {/* Orbit ring */}
+              <div className="absolute inset-0 rounded-full border border-white/10" />
+              <div className="absolute inset-2 rounded-full border border-white/5" />
+              {/* Rocket SVG */}
+              <svg
+                viewBox="0 0 48 48"
+                fill="none"
+                className="w-12 h-12 drop-shadow-lg"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Exhaust flame */}
+                <ellipse cx="24" cy="41" rx="4" ry="6" fill="#f97316" opacity="0.7" />
+                <ellipse cx="24" cy="40" rx="2.5" ry="4" fill="#fbbf24" opacity="0.9" />
+                {/* Body */}
+                <path
+                  d="M24 6 C16 14 14 24 14 32 L24 36 L34 32 C34 24 32 14 24 6Z"
+                  fill="white"
+                />
+                {/* Nose tip */}
+                <path d="M24 6 C21 10 20 13 20 16 L24 18 L28 16 C28 13 27 10 24 6Z" fill="#e2e8f0" />
+                {/* Window */}
+                <circle cx="24" cy="22" r="4" fill="#0ea5e9" opacity="0.9" />
+                <circle cx="24" cy="22" r="2.5" fill="#38bdf8" />
+                <circle cx="23" cy="21" r="0.8" fill="white" opacity="0.7" />
+                {/* Left fin */}
+                <path d="M14 32 L8 38 L14 36 Z" fill="#cbd5e1" />
+                {/* Right fin */}
+                <path d="M34 32 L40 38 L34 36 Z" fill="#cbd5e1" />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold">Dziękujemy za zamówienie!</h1>
-            <p className="mt-2 text-white/80">Potwierdzenie i szczegóły zamówienia znajdziesz poniżej.</p>
+
+            <h1 className="relative text-2xl font-bold text-white tracking-tight mb-2">
+              Dziękujemy za zamówienie!
+            </h1>
+            <p className="relative text-sm text-stone-400">
+              Potwierdzenie i szczegóły zamówienia znajdziesz poniżej.
+            </p>
           </div>
 
-          <div className="p-8 space-y-8">
-            <section className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-xl border border-gray-200 p-6">
-                <h2 className="font-semibold text-gray-900 mb-4">Szczegóły zamówienia</h2>
-                <div className="space-y-3 text-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Numer zamówienia</span>
-                    <span className="font-medium">{orderDetails.id}</span>
+          {/* ── Body ────────────────────────────────────────────────────── */}
+          <div className="p-8 space-y-5">
+
+            {/* Info cards */}
+            <section className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-stone-200 bg-white p-5">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-stone-800 mb-4">Szczegóły zamówienia</h2>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-stone-400">Numer zamówienia</span>
+                    <span className="font-medium text-stone-800">{shortId}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Kwota</span>
-                    <span className="font-semibold">{total.toFixed(2)} PLN</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-stone-400">Kwota</span>
+                    <span className="font-semibold text-stone-900">{total.toFixed(2)} PLN</span>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-gray-200 p-6">
-                <h2 className="font-semibold text-gray-900 mb-4">Dane kontaktowe</h2>
-                <div className="space-y-3 text-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Firma</span>
-                    <span className="font-medium">{orderDetails.customers?.company_name || 'N/A'}</span>
+              <div className="rounded-2xl border border-stone-200 bg-white p-5">
+                <h2 className="text-xs font-bold uppercase tracking-widest text-stone-800 mb-4">Dane kontaktowe</h2>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-stone-400">Firma</span>
+                    <span className="font-medium text-stone-800">{orderDetails.customers?.company_name || 'N/A'}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Email</span>
-                    <span className="font-medium">{orderDetails.customers?.email || 'N/A'}</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-stone-400">Email</span>
+                    <span className="font-medium text-stone-800">{orderDetails.customers?.email || 'N/A'}</span>
                   </div>
                 </div>
               </div>
             </section>
 
-            <section className="rounded-xl bg-gray-50 border border-gray-200 p-6">
-              <ul className="grid gap-3 text-sm text-gray-700 md:grid-cols-3">
-                <li className="flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-700">✓</span>
+            {/* Next steps */}
+            <section className="rounded-2xl bg-stone-50 border border-stone-200 p-5">
+              <ul className="grid gap-3 text-sm text-stone-600 md:grid-cols-3">
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span>
                   Otrzymasz fakturę VAT na podany adres email
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-700">✓</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span>
                   Skontaktujemy się w celu umówienia konsultacji
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-700">✓</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span>
                   W razie pytań: hello@taxm.pl
                 </li>
               </ul>
             </section>
 
-            <div className="flex justify-center">
+            {/* CTA */}
+            <div className="flex justify-center pt-1">
               <button
                 onClick={() => router.push('/')}
-                className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-2.5 text-white font-medium shadow-sm hover:bg-blue-700 transition-colors"
+                className="bg-stone-900 text-white px-8 py-3 rounded-2xl text-sm font-semibold hover:bg-stone-700 active:scale-[0.99] transition-all shadow-md hover:shadow-lg"
               >
-                Wróć do strony głównej
+                Wróć do strony głównej →
               </button>
             </div>
           </div>
@@ -221,8 +280,8 @@ export default function SuccessPage() {
   return (
     <Suspense 
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="spinner"></div>
+        <div className="min-h-screen flex items-center justify-center bg-stone-50">
+          <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-stone-800 animate-spin" />
         </div>
       }
     >

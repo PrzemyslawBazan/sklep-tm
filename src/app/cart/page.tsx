@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Trash2, Plus, Minus, ShoppingCart, ChevronRight } from 'lucide-react';
 import { useCart, useCartActions, useTotalItems, useIsCartHydrated } from '../contexts/CartContext';
 
 export default function CartPage() {
@@ -14,7 +14,7 @@ export default function CartPage() {
 
   const calculateTotals = () => {
     const gross = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const net = gross / 1.23; // Assuming 23% VAT
+    const net = gross / 1.23;
     const vat = gross - net;
     return { net, vat, gross };
   };
@@ -32,144 +32,195 @@ export default function CartPage() {
     router.push('/checkout');
   };
 
-  const goBack = () : any => {
+  const goBack = (): void => {
     router.back();
   };
 
-  // Show loading state while Zustand rehydrates from localStorage
   if (!isHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-[#FAF9F8] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-6 h-6 border-2 border-[#EDEBE9] border-t-[#0078D4] rounded-full animate-spin" />
+          <p className="text-sm text-[#605E5C]">Ładowanie...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-custom-beige py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center mb-8">
+    <div className="min-h-screen bg-[#FAF9F8] font-[system-ui]">
+      {/* Top Navigation Bar */}
+      <div className="h-12 bg-white border-b border-[#EDEBE9] px-6 flex items-center">
+        <nav className="flex items-center gap-1.5 text-sm">
           <button
             onClick={goBack}
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center gap-1.5 text-[#0078D4] hover:underline"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            <span>Powrót</span>
+            <ArrowLeft className="w-4 h-4" />
+            Powrót
           </button>
+          <ChevronRight className="w-3 h-3 text-[#A19F9D]" />
+          <span className="text-[#323130]">Koszyk</span>
+        </nav>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 py-6">
+        {/* Page Header */}
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold text-[#323130]">Koszyk</h1>
+          <p className="text-sm text-[#605E5C] mt-1">
+            {totalItems} {totalItems === 1 ? 'przedmiot' : 'przedmiotów'} w koszyku
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-gray-100 px-6 py-4 border-b">
-            <h1 className="text-2xl font-semibold text-gray-800">
-              Twój koszyk ({totalItems} przedmiotów)
-            </h1>
-          </div>
-
-          {cart.length === 0 ? (
-            <div className="text-center py-16">
-              <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Twój koszyk jest pusty</h3>
-              <p className="text-gray-500 mb-6">Dodaj usługi do koszyka, aby kontynuować</p>
-              <button
-                onClick={goBack}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Przeglądaj usługi
-              </button>
+        {cart.length === 0 ? (
+          /* Empty State */
+          <div className="bg-white border border-[#EDEBE9] p-12 text-center">
+            <div className="w-12 h-12 bg-[#F3F2F1] rounded-sm flex items-center justify-center mx-auto mb-4">
+              <ShoppingCart className="w-6 h-6 text-[#A19F9D]" />
             </div>
-          ) : (
-            <>
-              <div className="divide-y divide-gray-200">
-                {cart.map((item) => (
-                  <div key={item.serviceId} className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Cena jednostkowa: {formatPrice(item.price)}
+            <h2 className="text-[#323130] font-semibold mb-1">Twój koszyk jest pusty</h2>
+            <p className="text-sm text-[#605E5C] mb-6">
+              Dodaj usługi do koszyka, aby kontynuować
+            </p>
+            <button
+              onClick={goBack}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#0078D4] hover:bg-[#106EBE] text-white text-sm rounded-sm transition-colors"
+            >
+              Przeglądaj usługi
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Cart Items */}
+            <div className="lg:col-span-2">
+              <div className="bg-white border border-[#EDEBE9]">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9] text-xs font-semibold text-[#605E5C] uppercase tracking-wide">
+                  <div className="col-span-5">Usługa</div>
+                  <div className="col-span-3 text-center">Ilość</div>
+                  <div className="col-span-3 text-right">Cena</div>
+                  <div className="col-span-1"></div>
+                </div>
+
+                {/* Items */}
+                {cart.map((item, index) => (
+                  <div
+                    key={item.serviceId}
+                    className={`${index !== cart.length - 1 ? 'border-b border-[#EDEBE9]' : ''}`}
+                  >
+                    <div className="grid grid-cols-12 gap-4 px-4 py-4 items-center">
+                      {/* Service Info */}
+                      <div className="col-span-5">
+                        <h3 className="text-sm font-medium text-[#323130]">{item.name}</h3>
+                        <p className="text-xs text-[#605E5C] mt-0.5">
+                          {formatPrice(item.price)} / szt.
                         </p>
                       </div>
-                      
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
+
+                      {/* Quantity Controls */}
+                      <div className="col-span-3 flex justify-center">
+                        <div className="inline-flex items-center border border-[#8A8886] rounded-sm">
                           <button
                             onClick={() => updateQuantity(item.serviceId, item.quantity - 1)}
-                            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
                           >
-                            <Minus className="w-4 h-4" />
+                            <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-8 text-center font-medium">{item.quantity}</span>
+                          <span className="w-10 text-center text-sm text-[#323130]">
+                            {item.quantity}
+                          </span>
                           <button
                             onClick={() => updateQuantity(item.serviceId, item.quantity + 1)}
-                            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
                           >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3 h-3" />
                           </button>
                         </div>
+                      </div>
 
-                        <div className="text-right min-w-[100px]">
-                          <p className="text-lg font-semibold text-gray-900">
-                            {formatPrice(item.price * item.quantity)}
-                          </p>
-                        </div>
+                      {/* Item Total */}
+                      <div className="col-span-3 text-right">
+                        <span className="text-sm font-semibold text-[#323130]">
+                          {formatPrice(item.price * item.quantity)}
+                        </span>
+                      </div>
 
+                      {/* Remove Button */}
+                      <div className="col-span-1 text-right">
                         <button
                           onClick={() => removeFromCart(item.serviceId)}
-                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                          className="p-1.5 text-[#A19F9D] hover:text-[#A4262C] hover:bg-[#FDE7E9] rounded-sm transition-colors"
                           title="Usuń z koszyka"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
 
-                    <div className="mt-4">
-                      <label htmlFor={`note-${item.serviceId}`} className="block text-sm font-medium text-gray-700 mb-2">
-                        Notatka (opcjonalnie)
+                    {/* Note Field */}
+                    <div className="px-4 pb-4">
+                      <label
+                        htmlFor={`note-${item.serviceId}`}
+                        className="block text-xs font-semibold text-[#323130] mb-1"
+                      >
+                        Notatka
                       </label>
                       <textarea
                         id={`note-${item.serviceId}`}
                         value={item.note || ''}
                         onChange={(e) => updateNote(item.serviceId, e.target.value)}
-                        placeholder="Dodaj szczególne wymagania lub uwagi do tej usługi..."
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
+                        placeholder="Dodaj szczególne wymagania lub uwagi..."
+                        rows={2}
+                        className="w-full px-3 py-2 text-sm text-[#323130] bg-white border border-[#8A8886] rounded-sm placeholder:text-[#A19F9D] focus:outline-none focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] resize-none"
                       />
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="bg-gray-50 px-6 py-6 border-t">
-                <div className="max-w-sm ml-auto">
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Netto:</span>
-                      <span className="font-medium">{formatPrice(net)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">VAT (23%):</span>
-                      <span className="font-medium">{formatPrice(vat)}</span>
-                    </div>
-                    <div className="flex justify-between text-lg font-semibold pt-3 border-t">
-                      <span>Razem:</span>
-                      <span>{formatPrice(gross)}</span>
+            {/* Summary Panel */}
+            <div className="lg:col-span-1">
+              <div className="bg-white border border-[#EDEBE9] sticky top-6">
+                <div className="px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9]">
+                  <h3 className="text-xs font-semibold text-[#323130] uppercase tracking-wide">
+                    Podsumowanie
+                  </h3>
+                </div>
+
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#605E5C]">Netto</span>
+                    <span className="text-sm text-[#323130]">{formatPrice(net)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#605E5C]">VAT (23%)</span>
+                    <span className="text-sm text-[#323130]">{formatPrice(vat)}</span>
+                  </div>
+                  <div className="border-t border-[#EDEBE9] pt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-[#323130]">Razem</span>
+                      <span className="text-lg font-semibold text-[#323130]">{formatPrice(gross)}</span>
                     </div>
                   </div>
-                  
+                </div>
+
+                <div className="p-4 border-t border-[#EDEBE9]">
                   <button
                     onClick={handleCheckout}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium mt-6"
+                    className="w-full py-2.5 bg-[#107C10] hover:bg-[#0E6A0E] text-white text-sm font-semibold rounded-sm transition-colors focus:outline-none focus:ring-1 focus:ring-[#107C10] focus:ring-offset-1"
                   >
                     Przejdź do płatności
                   </button>
+                  <p className="text-xs text-[#605E5C] text-center mt-3">
+                    Bezpieczna płatność · Faktura VAT
+                  </p>
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

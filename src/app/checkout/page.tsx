@@ -226,23 +226,23 @@ export default function CheckoutPage() {
 
   if (!isHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-stone-200 border-t-stone-800"></div>
       </div>
     );
   }
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Koszyk jest pusty</h2>
-          <p className="text-gray-600 mb-6">
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="text-center px-6">
+          <h2 className="text-2xl font-bold text-stone-900 mb-3 tracking-tight">Koszyk jest pusty</h2>
+          <p className="text-stone-400 text-sm mb-8">
             Dodaj produkty do koszyka przed przejściem do płatności.
           </p>
           <button 
             onClick={() => router.push('/')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-stone-900 text-white px-6 py-3 rounded-2xl text-sm font-semibold hover:bg-stone-700 active:scale-[0.99] transition-all shadow-md hover:shadow-lg"
           >
             Powrót do sklepu
           </button>
@@ -252,26 +252,29 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Podsumowanie zamówienia</h2>
+    <main className="max-w-3xl mx-auto px-4 py-10">
+
+      {/* Order summary card */}
+      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm p-6 mb-5">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-stone-800 mb-5">Podsumowanie zamówienia</h2>
         <div className="space-y-2">
           {cart.map((item) => (
-            <div key={item.serviceId} className="flex justify-between">
-              <span>{item.name} x {item.quantity}</span>
-              <span>{(item.price * item.quantity).toFixed(2)} PLN</span>
+            <div key={item.serviceId} className="flex justify-between text-sm text-stone-600">
+              <span>{item.name} <span className="text-stone-400">× {item.quantity}</span></span>
+              <span className="font-medium text-stone-800">{(item.price * item.quantity).toFixed(2)} PLN</span>
             </div>
           ))}
-          <div className="border-t pt-2 font-semibold flex justify-between">
-            <span>Razem (z VAT):</span>
+          <div className="border-t border-stone-100 pt-3 mt-3 flex justify-between text-sm font-semibold text-stone-900">
+            <span>Razem (z VAT)</span>
             <span>{calculateTotal().toFixed(2)} PLN</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Dane do faktury</h2>
+      {/* Invoice / checkout form card */}
+      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-stone-800">Dane do faktury</h2>
           {savedCustomerData && (
             <button
               type="button"
@@ -282,7 +285,7 @@ export default function CheckoutPage() {
                 });
                 window.dispatchEvent(event);
               }}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+              className="px-4 py-2 bg-stone-100 text-stone-700 border border-stone-200 rounded-xl text-xs font-semibold hover:bg-stone-200 hover:border-stone-300 active:scale-[0.98] transition-all"
             >
               Użyj standardowego adresu
             </button>
@@ -295,6 +298,7 @@ export default function CheckoutPage() {
           onCustomerSelect={handleCustomerSelect}
         />
       </div>
+
     </main>
   );
 }
