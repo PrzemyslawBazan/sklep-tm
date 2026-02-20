@@ -59,7 +59,7 @@ function SuccessContent() {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`)
     }
-  }
+  }// unused
   
   const sendRequest = async (orderData : any) => {
   try {
