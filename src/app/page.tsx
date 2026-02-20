@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ServiceCard from './components/ServiceCard';
 import { useServices } from './hooks/useServices';
-import { useCartActions, useTotalItems } from '../app/contexts/CartContext';
+import { useCartActions, useIsCartHydrated, useTotalItems } from '../app/contexts/CartContext';
 
 export default function Home() {
   const router = useRouter();
@@ -14,6 +14,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [isHovered, setIsHovered] = useState(false);
+
+  const isHydrated = useIsCartHydrated();
 
 
   // Refs for scrollable containers
@@ -38,7 +40,7 @@ export default function Home() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !isHydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

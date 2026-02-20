@@ -1,7 +1,43 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { CartItem, Service } from '../types/index';
 import supabase from '../lib/supabase';
+
+// ─── SAFE STORAGE ─────────────────────────────────────────────────────────────
+// Guards against:
+// 1. SSR — localStorage doesn't exist on the server
+// 2. Corrupted data — JSON.parse won't throw and blank the page
+// 3. Storage quota errors — setItem won't crash the app
+
+const safeLocalStorage: StateStorage = {
+  getItem: (key: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.warn('[CartStore] Failed to read from localStorage:', e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('[CartStore] Failed to write to localStorage:', e);
+    }
+  },
+  removeItem: (key: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn('[CartStore] Failed to remove from localStorage:', e);
+    }
+  },
+};
+
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface CartStore {
   cart: CartItem[];
@@ -20,6 +56,8 @@ interface CartStore {
 
   setHydrated: () => void;
 }
+
+// ─── STORE ────────────────────────────────────────────────────────────────────
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -50,20 +88,24 @@ export const useCartStore = create<CartStore>()(
             }],
           };
         });
-        console.log("HELLO does it work")
+
         if (!userId) return;
 
-        const updatedItem = get().cart.find(item => item.serviceId === service.id);
-        await supabase.from('cart_items').upsert(
-          {
-            user_id: userId,
-            product_id: service.id,
-            name: service.name,
-            price: service.price,
-            quantity: updatedItem?.quantity ?? 1,
-          },
-          { onConflict: 'user_id,product_id' }
-        );
+        try {
+          const updatedItem = get().cart.find(item => item.serviceId === service.id);
+          await supabase.from('cart_items').upsert(
+            {
+              user_id: userId,
+              product_id: service.id,
+              name: service.name,
+              price: service.price,
+              quantity: updatedItem?.quantity ?? 1,
+            },
+            { onConflict: 'user_id,product_id' }
+          );
+        } catch (e) {
+          console.error('[CartStore] Failed to sync addToCart with DB:', e);
+        }
       },
 
       removeFromCart: async (serviceId: string, userId?: string) => {
@@ -73,11 +115,15 @@ export const useCartStore = create<CartStore>()(
 
         if (!userId) return;
 
-        await supabase
-          .from('cart_items')
-          .delete()
-          .eq('user_id', userId)
-          .eq('product_id', serviceId);
+        try {
+          await supabase
+            .from('cart_items')
+            .delete()
+            .eq('user_id', userId)
+            .eq('product_id', serviceId);
+        } catch (e) {
+          console.error('[CartStore] Failed to sync removeFromCart with DB:', e);
+        }
       },
 
       updateQuantity: async (serviceId: string, quantity: number, userId?: string) => {
@@ -94,11 +140,15 @@ export const useCartStore = create<CartStore>()(
 
         if (!userId) return;
 
-        await supabase
-          .from('cart_items')
-          .update({ quantity })
-          .eq('user_id', userId)
-          .eq('product_id', serviceId);
+        try {
+          await supabase
+            .from('cart_items')
+            .update({ quantity })
+            .eq('user_id', userId)
+            .eq('product_id', serviceId);
+        } catch (e) {
+          console.error('[CartStore] Failed to sync updateQuantity with DB:', e);
+        }
       },
 
       updateNote: async (serviceId: string, note: string, userId?: string) => {
@@ -110,11 +160,15 @@ export const useCartStore = create<CartStore>()(
 
         if (!userId) return;
 
-        await supabase
-          .from('cart_items')
-          .update({ note })
-          .eq('user_id', userId)
-          .eq('product_id', serviceId);
+        try {
+          await supabase
+            .from('cart_items')
+            .update({ note })
+            .eq('user_id', userId)
+            .eq('product_id', serviceId);
+        } catch (e) {
+          console.error('[CartStore] Failed to sync updateNote with DB:', e);
+        }
       },
 
       clearCart: async (userId?: string) => {
@@ -122,71 +176,91 @@ export const useCartStore = create<CartStore>()(
 
         if (!userId) return;
 
-        await supabase
-          .from('cart_items')
-          .delete()
-          .eq('user_id', userId);
+        try {
+          await supabase
+            .from('cart_items')
+            .delete()
+            .eq('user_id', userId);
+        } catch (e) {
+          console.error('[CartStore] Failed to sync clearCart with DB:', e);
+        }
       },
 
       syncCartFromDB: async (userId: string) => {
         set({ isSyncing: true });
 
-        const { data, error } = await supabase
-          .from('cart_items')
-          .select('*')
-          .eq('user_id', userId);
+        try {
+          const { data, error } = await supabase
+            .from('cart_items')
+            .select('*')
+            .eq('user_id', userId);
 
-        if (error) {
-          console.error('Failed to sync cart:', error);
+          if (error) {
+            console.error('[CartStore] Failed to sync cart from DB:', error);
+            set({ isSyncing: false });
+            return;
+          }
+
+          const cart: CartItem[] = (data ?? []).map((row) => ({
+            serviceId: row.product_id,
+            name: row.name,
+            price: row.price,
+            quantity: row.quantity,
+            note: row.note ?? undefined,
+            addedAt: new Date(row.created_at),
+          }));
+
+          set({ cart, isSyncing: false });
+        } catch (e) {
+          console.error('[CartStore] Unexpected error in syncCartFromDB:', e);
           set({ isSyncing: false });
-          return;
         }
-
-        const cart: CartItem[] = (data ?? []).map((row) => ({
-          serviceId: row.product_id,
-          name: row.name,
-          price: row.price,
-          quantity: row.quantity,
-          note: row.note ?? undefined,
-          addedAt: new Date(row.created_at),
-        }));
-
-        set({ cart, isSyncing: false });
       },
 
       mergeGuestCartAndSync: async (userId: string) => {
         set({ isSyncing: true });
-        const guestCart = get().cart;
 
-        if (guestCart.length > 0) {
-          const upsertPayload = guestCart.map((item) => ({
-            user_id: userId,
-            product_id: item.serviceId,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            note: item.note ?? null,
-          }));
+        try {
+          const guestCart = get().cart;
 
-          await supabase
-            .from('cart_items')
-            .upsert(upsertPayload, { onConflict: 'user_id,product_id' });
+          if (guestCart.length > 0) {
+            const upsertPayload = guestCart.map((item) => ({
+              user_id: userId,
+              product_id: item.serviceId,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              note: item.note ?? null,
+            }));
+
+            await supabase
+              .from('cart_items')
+              .upsert(upsertPayload, { onConflict: 'user_id,product_id' });
+          }
+
+          await get().syncCartFromDB(userId);
+        } catch (e) {
+          console.error('[CartStore] Failed to merge guest cart:', e);
+          set({ isSyncing: false });
         }
-
-        await get().syncCartFromDB(userId);
       },
 
       clearCartOnLogout: () => {
         set({ cart: [], isSyncing: false });
-        localStorage.removeItem('cart-storage');
+        safeLocalStorage.removeItem('cart-storage');
       },
 
       setHydrated: () => set({ isHydrated: true }),
     }),
     {
       name: 'cart-storage',
-      storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: () => (state) => {
+      storage: createJSONStorage(() => safeLocalStorage),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          // Corrupted storage — wipe it so the next load starts clean
+          console.error('[CartStore] Rehydration failed, clearing corrupted storage:', error);
+          safeLocalStorage.removeItem('cart-storage');
+        }
         state?.setHydrated();
       },
       partialize: (state) => ({ cart: state.cart }),
@@ -194,7 +268,7 @@ export const useCartStore = create<CartStore>()(
   )
 );
 
-// ─── SELECTOR HOOKS ──────────────────────────────────────────────────────────
+// ─── SELECTOR HOOKS ───────────────────────────────────────────────────────────
 
 export const useCart = () => useCartStore((state) => state.cart);
 export const useIsCartHydrated = () => useCartStore((state) => state.isHydrated);
