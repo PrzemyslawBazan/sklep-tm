@@ -3,12 +3,6 @@ import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { CartItem, Service } from '../types/index';
 import supabase from '../lib/supabase';
 
-// ─── SAFE STORAGE ─────────────────────────────────────────────────────────────
-// Guards against:
-// 1. SSR — localStorage doesn't exist on the server
-// 2. Corrupted data — JSON.parse won't throw and blank the page
-// 3. Storage quota errors — setItem won't crash the app
-
 const safeLocalStorage: StateStorage = {
   getItem: (key: string): string | null => {
     if (typeof window === 'undefined') return null;
@@ -37,7 +31,6 @@ const safeLocalStorage: StateStorage = {
   },
 };
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface CartStore {
   cart: CartItem[];
@@ -57,7 +50,6 @@ interface CartStore {
   setHydrated: () => void;
 }
 
-// ─── STORE ────────────────────────────────────────────────────────────────────
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -257,7 +249,6 @@ export const useCartStore = create<CartStore>()(
       storage: createJSONStorage(() => safeLocalStorage),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          // Corrupted storage — wipe it so the next load starts clean
           console.error('[CartStore] Rehydration failed, clearing corrupted storage:', error);
           safeLocalStorage.removeItem('cart-storage');
         }
@@ -268,7 +259,6 @@ export const useCartStore = create<CartStore>()(
   )
 );
 
-// ─── SELECTOR HOOKS ───────────────────────────────────────────────────────────
 
 export const useCart = () => useCartStore((state) => state.cart);
 export const useIsCartHydrated = () => useCartStore((state) => state.isHydrated);

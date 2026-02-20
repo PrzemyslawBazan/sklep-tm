@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
         .eq('id', orderId)
         .select()
         .single();
-
       if (orderError) {
         console.error('Error updating order:', orderError);
         return NextResponse.json({ 

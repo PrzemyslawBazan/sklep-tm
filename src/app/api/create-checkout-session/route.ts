@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       line_items: lineItems,
       customer: stripeCustomerId, // FIXED: was customerStripeId, now stripeCustomerId
       mode: 'payment',
+      allow_promotion_codes: true,
       success_url: `${process.env.REDIRECT_LINK}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.REDIRECT_LINK}/checkout`,
       metadata: {

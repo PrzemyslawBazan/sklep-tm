@@ -24,7 +24,7 @@ function SuccessContent() {
     if (sessionId && !hasVerified.current) {
       verifyPayment(sessionId);
       hasVerified.current = true;
-      clearCart(user?.id)
+      clearCart(user?.id);
     } else if (!sessionId) {
       console.log('No session ID found, redirecting...');
       router.push('/');
@@ -38,6 +38,26 @@ function SuccessContent() {
       setShortId(shorten)
     } else {
       setShortId("BrakId")
+    }
+  }
+
+  const sendEmail = async(email: string, sessionId: string) => {
+    if (!email || !sessionId) {
+      throw Error("No data provided.");
+    }
+    const response = await fetch("/api/sendPurchaseEmail", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        customerEmail: email,
+        sessionId: sessionId
+      })
+    })
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`)
     }
   }
   
@@ -101,6 +121,7 @@ function SuccessContent() {
         setDate(data.order.paid_at)
         setOrderDetails(data.order);
         await sendRequest(data.order);
+        //await sendEmail(data.order.customers.email, sessionId);
         shortenOrderId(data.order);
         clearCart();
       } else {
