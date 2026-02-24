@@ -12,8 +12,17 @@ export async function POST(request: NextRequest) {
   console.log('Processing session:', sessionId);
   
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
+    const session = await stripe.checkout.sessions.retrieve(sessionId); 
+    let codeString;
+    if (session.discounts?.[0]) {
+        const discount = session.discounts[0];
+
+      if (typeof discount.promotion_code === "string") {
+        codeString = discount.promotion_code;
+      } else { 
+        codeString = discount.promotion_code?.code;
+      }
+    }
     if (session.payment_status === 'paid') {
       const { orderId, customerId } = session.metadata!;
       
@@ -29,6 +38,7 @@ export async function POST(request: NextRequest) {
           stripe_customer_id: session.customer as string,
           status: 'completed',
           paid_at: paid_at,
+          coupon: codeString
         })
         .eq('id', orderId)
         .select()

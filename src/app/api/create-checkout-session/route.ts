@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       },
       quantity: item.quantity,
     }));
-
+    console.log(userInfo);
     console.log('Creating Stripe session with customer:', stripeCustomerId);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'blik', 'p24'],

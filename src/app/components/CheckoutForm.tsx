@@ -112,7 +112,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
         setFormData({
           email: customer.email || '',
           companyName: customer.metadata?.companyName || customer.name || '',
-          nip: customer.metadata?.nip || '',
+          nip: customer.nip || '',
           regon: customer.metadata?.regon || '',
           krs: customer.metadata?.krs || '',
           contactPerson: {

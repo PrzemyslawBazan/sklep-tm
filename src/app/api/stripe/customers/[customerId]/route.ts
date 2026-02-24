@@ -18,7 +18,10 @@ export async function GET(
     
     // Retrieve the customer from Stripe
     const customer = await stripe.customers.retrieve(customerId);
-    
+    const taxIds = await stripe.customers.listTaxIds(customerId);
+    console.log("FETCHING \n")
+    console.log(taxIds)
+    console.log(taxIds.data[0].value)
     // Check if customer was deleted
     if ('deleted' in customer && customer.deleted) {
       return NextResponse.json(
@@ -37,6 +40,7 @@ export async function GET(
         phone: customer.phone,
         created: customer.created,
         description: customer.description,
+        nip: taxIds.data[0].value
       },
     });
   } catch (error: any) {
