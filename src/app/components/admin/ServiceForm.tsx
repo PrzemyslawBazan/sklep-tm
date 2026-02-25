@@ -11,6 +11,10 @@ import StepsField from './StepsField';
 import RequirementsField from './RequirementsField';
 import SubmitButton from './SubmitButton';
 import { createService } from '@/app/api/services/servicesApi';
+import supabase from '@/app/lib/supabase';
+import { useEffect } from 'react';
+
+import DurationField from './DurationField';
 
 export interface ServiceData {
     name: string;
@@ -28,6 +32,9 @@ export interface ServiceData {
     overview_points: string[];
     steps: string[];
     requirements: string[];
+    ud_code: string | number | null;
+    start_time: string | null;
+    finish_time: string | null;
 }
 
 interface ServiceFormProps {
@@ -51,11 +58,22 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
         overview: '',
         overview_points: [],
         steps: [],
-        requirements: []
+        requirements: [],
+        ud_code: '',
+        start_time: '',
+        finish_time: ''
     });
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const [udCodes, setUdCodes] = useState<{ id: number; name: string }[]>([]);
+    useEffect(() => {
+        const fetchUdCodes = async () => {
+            const { data } = await supabase.from('ud_codes').select('*');
+            if (data) setUdCodes(data);
+        };
+        fetchUdCodes();
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -66,7 +84,11 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+    const handleUdCodeAdded = (code: { id: number; name: string }) => {
+    setUdCodes(prev => [...prev, code]);
+    };
 
+    
     const generateSlug = (name: string): string => {
         return name
             .toLowerCase()
@@ -142,7 +164,10 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
         
         try {
             // make sure to check that the user is admin before calling it. that's for later.
-            const result = await createService(formData, isAdmin);
+            const result = await createService({
+                ...formData,
+                ud_code: formData.ud_code ? Number(formData.ud_code) : null
+            }, isAdmin);            
             console.log("ERROR")
             console.log(result.data);
             if (result.success) {
@@ -164,7 +189,10 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     overview: '',
                     overview_points: [],
                     steps: [],
-                    requirements: []
+                    requirements: [],
+                    ud_code: '',
+                    start_time: '',
+                    finish_time: ''
                 });
             } else {
                 setError(result.error || 'Failed to create service');
@@ -208,10 +236,12 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     onDeliverablesChange={handleDeliverablesChange}
                 />
 
-                <OverviewFields 
+               <OverviewFields
                     formData={formData}
                     onInputChange={handleInputChange}
                     onOverviewPointsChange={handleOverviewPointsChange}
+                    udCodes={udCodes}
+                    onUdCodeAdded={handleUdCodeAdded}
                 />
 
                 <StepsField 
@@ -222,6 +252,10 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                 <RequirementsField 
                     formData={formData}
                     onRequirementsChange={handleRequirementsChange}
+                />
+                <DurationField
+                    formData={formData}
+                    onInputChange={handleInputChange}
                 />
                 
                 <SubmitButton 

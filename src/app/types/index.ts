@@ -15,7 +15,10 @@ export interface Service {
   overview: string;
   overview_points: string[],
   steps: string[],
-  requirements: string[]
+  requirements: string[],
+  ud_code: number | null,
+  start_time: string | number | null,
+  finish_time: string | number | null
 }
 export interface CartItem {
   serviceId: string;
@@ -41,7 +44,10 @@ export interface CreateServiceData {
   overview: string;
   overview_points: string[],
   steps: string[],
-  requirements: string[]
+  requirements: string[],
+  ud_code: number | null,
+  start_time: string | number | null
+  finish_time: string | number | null
 }
 
 

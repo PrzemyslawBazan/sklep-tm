@@ -157,7 +157,7 @@ export default function ServiceDetailPage() {
                 </div>
                 <div className="flex items-center">
                   <span className="text-gray-700 font-medium">Czas realizacji:</span>
-                  <span className="ml-2">od 1 do 3 dni</span>
+                  <span className="ml-2">od {service.start_time ?? "-"} do {service.finish_time ?? "-"} dni</span>
                 </div>
               </div>
 

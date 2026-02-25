@@ -41,6 +41,9 @@ export const fetchActiveServices = async (): Promise<Service[]> => {
         overview_points: service.overview_points,
         steps: service.steps,
         requirements: service.requirements,
+        ud_code: service.ud_code,
+        start_time: service.start_time,
+        finish_time: service.finish_time
       })) || [];
 
 
@@ -66,7 +69,10 @@ export const createService = async (serviceData: {
   overview: string;
   overview_points: string[];
   steps: string[];
-  requirements: string[]
+  requirements: string[];
+  ud_code: number | null,
+  start_time: string | number | null,
+  finish_time: string | number | null
 }, isAdmin: boolean): Promise<{ success: boolean; data?: Service; error?: string }> => {
   try {
     if (!isAdmin) {
@@ -89,7 +95,10 @@ export const createService = async (serviceData: {
       overview: serviceData.overview,
       overview_points: serviceData.overview_points,
       steps: serviceData.steps,
-      requirements: serviceData.requirements
+      requirements: serviceData.requirements,
+      ud_code: serviceData.ud_code,
+      start_time: serviceData.start_time,
+      finish_time: serviceData.finish_time
     };
 
 
@@ -121,7 +130,10 @@ export const createService = async (serviceData: {
       overview: data.overview,
       overview_points: data.overview_points,
       steps: data.steps,
-      requirements: data.requirements
+      requirements: data.requirements,
+      ud_code: data.ud_code,
+      start_time: data.start_time,
+      finish_time: data.finish_time
     };
 
     return { success: true, data: createdService };
