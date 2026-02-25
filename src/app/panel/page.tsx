@@ -24,8 +24,6 @@ export default function Panel() {
     const [formData, setFormData] = useState<UpdateUserProfileData>({
         company_name: '',
         nip: '',
-        regon: '',
-        krs: '',
         contact_first_name: '',
         contact_last_name: '',
         contact_phone: '',
@@ -68,8 +66,8 @@ export default function Panel() {
         body: JSON.stringify({
         orderId: ordersData[0].id,
         customerId: user?.id,
-        customerStripeId: ordersData[0].stripe_customer_id || null, // Assuming service has this
-        items: ordersData[0].order_items, // Use the order items from the fetched data
+        customerStripeId: ordersData[0].stripe_customer_id || null, 
+        items: ordersData[0].order_items, 
         userInfo: {
             userId: user?.id,
             email: user?.email,
@@ -86,7 +84,6 @@ export default function Panel() {
 
       const { sessionUrl } = await response.json();
       
-      // Redirect to Stripe
       window.location.href = sessionUrl;
     };
 
@@ -154,12 +151,9 @@ export default function Panel() {
     };
 
     const editProfile = () => {
-        // Pre-fill form with existing data if available
         setFormData({
             company_name: userProfile?.company || '',
             nip: userProfile?.nip || '',
-            regon: userProfile?.regon || '',
-            krs: userProfile?.krs || '',
             contact_first_name: userProfile?.contact_first_name || '',
             contact_last_name: userProfile?.contact_last_name || '',
             contact_phone: userProfile?.phone || '',
@@ -417,32 +411,6 @@ export default function Panel() {
                                             value={formData.nip}
                                             onChange={handleInputChange}
                                             required
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            placeholder="0000000000"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            REGON
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="regon"
-                                            value={formData.regon}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            placeholder="000000000"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            KRS
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="krs"
-                                            value={formData.krs}
-                                            onChange={handleInputChange}
                                             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             placeholder="0000000000"
                                         />

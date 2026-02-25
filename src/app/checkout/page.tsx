@@ -54,8 +54,6 @@ export default function CheckoutPage() {
             email: customer.email || '',
             companyName: customer.company_name || '',
             nip: customer.nip || '',
-            regon: customer.regon || '',
-            krs: customer.krs || '',
             address: {
               street: addressData?.street || '',
               city: addressData?.city || '',
@@ -140,8 +138,6 @@ export default function CheckoutPage() {
             email: customer.email,
             company_name: customer.companyName,
             nip: customer.nip,
-            regon: customer.regon,
-            krs: customer.krs,
             address_id: addressData.id,
             contact_first_name: customer.contactPerson.firstName,
             contact_last_name: customer.contactPerson.lastName,

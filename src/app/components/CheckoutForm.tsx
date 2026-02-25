@@ -30,8 +30,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
     email: '',
     companyName: '',
     nip: '',
-    regon: '',
-    krs: '',
     contactPerson: {
       firstName: '',
       lastName: '',
@@ -84,8 +82,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
         email: '',
         companyName: '',
         nip: '',
-        regon: '',
-        krs: '',
         contactPerson: {
           firstName: '',
           lastName: '',
@@ -115,8 +111,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
           email: customer.email || '',
           companyName: customer.metadata?.companyName || customer.name || '',
           nip: customer.nip || '',
-          regon: customer.metadata?.regon || '',
-          krs: customer.metadata?.krs || '',
           contactPerson: {
             firstName: customer.metadata?.firstName || '',
             lastName: customer.metadata?.lastName || '',
@@ -266,28 +260,6 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               onChange={handleChange}
               required
               pattern="[0-9]{10}"
-              disabled={isCompanyDataLocked}
-              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold mb-1.5 text-stone-400 uppercase tracking-widest">REGON</label>
-            <input
-              type="text"
-              name="regon"
-              value={formData.regon}
-              onChange={handleChange}
-              disabled={isCompanyDataLocked}
-              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold mb-1.5 text-stone-400 uppercase tracking-widest">KRS</label>
-            <input
-              type="text"
-              name="krs"
-              value={formData.krs}
-              onChange={handleChange}
               disabled={isCompanyDataLocked}
               className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />

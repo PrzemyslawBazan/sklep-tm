@@ -42,8 +42,6 @@ export interface PurchaseHistory {
 export interface UpdateUserProfileData {
   company_name: string;
   nip: string;
-  regon?: string;
-  krs?: string;
   contact_first_name: string;
   contact_last_name: string;
   contact_phone: string;
@@ -121,8 +119,6 @@ export const upsertUserProfile = async (
       email: user.email,
       company_name: profileData.company_name,
       nip: profileData.nip,
-      regon: profileData.regon || null,
-      krs: profileData.krs || null,
       contact_first_name: profileData.contact_first_name,
       contact_last_name: profileData.contact_last_name,
       contact_phone: profileData.contact_phone,

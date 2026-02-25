@@ -49,8 +49,6 @@ export interface Customer {
   email: string;
   companyName: string;
   nip: string;
-  regon?: string;
-  krs?: string;
   contactPerson: {
     firstName: string;
     lastName: string;
