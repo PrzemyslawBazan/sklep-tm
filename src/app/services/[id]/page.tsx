@@ -173,7 +173,7 @@ export default function ServiceDetailPage() {
             {service.overview && (
               <div className="mb-8">
                 <h2 className="text-lg font-bold text-gray-900 mb-3">Opis usługi:</h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">{service.overview}</p>
+                <p className="text-gray-700 mb-4 leading-relaxed">{service.fullDescription}</p>
                 {service.overview_points && service.overview_points.length > 0 && (
                   <ul className="space-y-1 text-gray-700">
                     {service.overview_points.map((point, i) => (
