@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Get complete order data with relationships
       const { data: completeOrder, error: fetchError } = await supabase
         .from('orders')
         .select(`

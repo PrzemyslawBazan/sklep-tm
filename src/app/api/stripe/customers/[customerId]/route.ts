@@ -11,18 +11,13 @@ export async function GET(
   context: { params: Promise<{ customerId: string }> }
 ) {
   try {
-    // Await the params object
     const { customerId } = await context.params;
     
-    console.log('Fetching customer:', customerId); // Debug log
+    console.log('Fetching customer:', customerId); 
     
-    // Retrieve the customer from Stripe
     const customer = await stripe.customers.retrieve(customerId);
     const taxIds = await stripe.customers.listTaxIds(customerId);
-    console.log("FETCHING \n")
-    console.log(taxIds)
-    console.log(taxIds.data[0].value)
-    // Check if customer was deleted
+    const vat_number = taxIds.data[0].value.replace(/[A-Z][A-Z]/, "")
     if ('deleted' in customer && customer.deleted) {
       return NextResponse.json(
         { error: 'Customer not found or has been deleted' },
@@ -40,7 +35,7 @@ export async function GET(
         phone: customer.phone,
         created: customer.created,
         description: customer.description,
-        nip: taxIds.data[0].value
+        nip: vat_number
       },
     });
   } catch (error: any) {
