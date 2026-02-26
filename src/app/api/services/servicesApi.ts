@@ -54,6 +54,101 @@ export const fetchActiveServices = async (): Promise<Service[]> => {
   }
 };
 
+export const updateService = async (serviceId: string, serviceData: {
+  name: string;
+  slug: string;
+  description: string;
+  full_description: string;
+  category: string;
+  price: string;
+  currency: string;
+  vat_rate: string;
+  price_includes: boolean;
+  is_active: boolean;
+  deliverables: string[];
+  overview: string;
+  overview_points: string[];
+  steps: string[];
+  requirements: string[];
+  ud_code: number | null;
+  start_time: string | number | null;
+  finish_time: string | number | null;
+}, isAdmin: boolean): Promise<{ success: boolean; data?: Service; error?: string }> => {
+  try {
+    if (!isAdmin) {
+      throw new Error("Not an admin");
+    }
+
+    const dataToUpdate: CreateServiceData = {
+      name: serviceData.name,
+      slug: serviceData.slug,
+      description: serviceData.description,
+      full_description: serviceData.full_description,
+      category: serviceData.category,
+      price: serviceData.price ? parseFloat(serviceData.price) : null,
+      currency: serviceData.currency,
+      vat_rate: serviceData.vat_rate
+        ? parseFloat(serviceData.vat_rate) / 100
+        : null,
+      price_includes_vat: serviceData.price_includes,
+      is_active: serviceData.is_active,
+      deliverables: serviceData.deliverables,
+      overview: serviceData.overview,
+      overview_points: serviceData.overview_points,
+      steps: serviceData.steps,
+      requirements: serviceData.requirements,
+      ud_code: serviceData.ud_code,
+      start_time: serviceData.start_time,
+      finish_time: serviceData.finish_time
+    };
+
+    const { data, error } = await supabase
+      .from('services')
+      .update(dataToUpdate)
+      .eq('id', serviceId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Supabase error updating service:', error);
+      throw new Error(error.message);
+    }
+
+    console.log('✅ Service updated successfully:', data);
+
+    const updatedService: Service = {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      description: data.description,
+      fullDescription: data.full_description,
+      category: data.category,
+      price: data.price,
+      currency: data.currency,
+      vatRate: data.vat_rate,
+      priceIncludesVat: data.price_includes_vat,
+      isActive: data.is_active,
+      deliverables: data.deliverables,
+      overview: data.overview,
+      overview_points: data.overview_points,
+      steps: data.steps,
+      requirements: data.requirements,
+      ud_code: data.ud_code,
+      start_time: data.start_time,
+      finish_time: data.finish_time
+    };
+
+    return { success: true, data: updatedService };
+  } catch (error) {
+    console.error('❌ Error updating service:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
+
+
 export const createService = async (serviceData: {
   name: string;
   slug: string;

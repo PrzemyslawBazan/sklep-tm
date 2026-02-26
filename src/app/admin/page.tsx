@@ -18,6 +18,7 @@ import {
     Loader2,
     Lock
 } from 'lucide-react';
+import EditForm from '../components/admin/EditForm';
 
 type AdminView = 'add' | 'update' | 'delete' | 'overview';
 
@@ -45,7 +46,10 @@ export default function AdminPage() {
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
     };
-
+    const handleServiceUpdated = () => {
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+    };
     const getNumberOfTotalServices = async () => {
         const { count, error } = await supabase
             .from('services')
@@ -242,7 +246,7 @@ export default function AdminPage() {
                             <div className="text-center py-8">
                                 <Edit className="w-10 h-10 text-[#A19F9D] mx-auto mb-3" />
                                 <p className="text-[#323130] font-medium">Zaktualizuj usługę</p>
-                                <p className="text-sm text-[#605E5C] mt-1">Add your update product component here</p>
+                                <EditForm onServiceUpdated={handleServiceUpdated} isAdmin={isAdmin} />
                             </div>
                         </div>
                     )}
