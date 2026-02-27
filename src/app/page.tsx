@@ -198,12 +198,10 @@ export default function Home() {
       return nameMatch || descriptionMatch || categoryTextMatch || deliverablesMatch;
     });
 
-    // Filter by active category
     const filteredServices = activeCategory === 'all' 
       ? searchFilteredServices 
       : searchFilteredServices.filter(service => service.category === activeCategory);
 
-    // Group services by category
     const groupedServices = filteredServices.reduce((acc, service) => {
       const category = service.category || 'other';
       if (!acc[category]) {

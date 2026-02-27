@@ -21,7 +21,6 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Use sessionStorage for browser session persistence
 const ADMIN_CACHE_KEY = 'admin_status_cache';
 
 const getAdminCache = (): Record<string, boolean> => {
@@ -47,7 +46,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdmin, setIsAdmin] = useState(false);
   
-  // Track the last checked user to prevent duplicate checks
   const lastCheckedUserRef = useRef<string | null>(null);
   const initializingRef = useRef(false);
   
@@ -57,7 +55,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     let mounted = true;
 
-    // Get initial session
     const getInitialSession = async () => {
       try {
         console.log('🔄 Getting initial session...');
@@ -67,7 +64,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('👤 User found:', session.user.id);
           setUser(session.user);
           
-          // Check cache first
           const cache = getAdminCache();
           if (cache[session.user.id] !== undefined) {
             console.log('📦 Using cached admin status');
@@ -77,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             await checkAdminStatus(session.user);
           }
         } else {
-          console.log('👤 No user found');
+          console.log('No user found');
         }
       } catch (error) {
         console.error('Error getting initial session:', error);
@@ -90,40 +86,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     getInitialSession();
 
-    // Listen for auth changes - but filter aggressively
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
         
-        console.log(`🔔 Auth event: ${event}, User: ${session?.user?.id || 'none'}`);
+        console.log(`Auth event: ${event}, User: ${session?.user?.id || 'none'}`);
         
-        // Only handle critical events
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
           if (session?.user) {
-            // Only update if user actually changed
             if (session.user.id !== lastCheckedUserRef.current) {
-              console.log('👤 User changed, updating...');
+              console.log('User changed, updating...');
               setUser(session.user);
               
               const cache = getAdminCache();
               if (cache[session.user.id] !== undefined) {
-                console.log('📦 Using cached admin status for new user');
+                console.log('Using cached admin status for new user');
                 setIsAdmin(cache[session.user.id]);
                 lastCheckedUserRef.current = session.user.id;
               } else {
                 await checkAdminStatus(session.user);
               }
             } else {
-              console.log('✅ Same user, skipping update');
+              console.log('Same user, skipping update');
             }
           } else {
-            console.log('👤 User signed out');
+            console.log('User signed out');
             setUser(null);
             setIsAdmin(false);
             lastCheckedUserRef.current = null;
           }
         } else {
-          console.log(`⏭️ Ignoring ${event} event`);
+          console.log(`Ignoring ${event} event`);
         }
       }
     );
@@ -132,10 +125,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []); // Empty deps, only run once
+  }, []); 
 
   const checkAdminStatus = async (user: User) => {
-    // Double-check we haven't already checked this user
     if (lastCheckedUserRef.current === user.id) {
       console.log('⏭️ Already checked this user, skipping');
       return;
@@ -152,13 +144,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .select('*', { count: 'exact', head: true });
       
       if (countError) {
-        console.error('❌ Cannot access admin_users table:', countError);
+        console.error('Cannot access admin_users table:', countError);
         setIsAdmin(false);
         setAdminCache(user.id, false);
         return;
       }
       
-      console.log('✅ admin_users table accessible');
+      console.log('admin_users table accessible');
       
       // Check for the specific user
       const { data: adminData, error } = await supabase
@@ -174,7 +166,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setAdminCache(user.id, isUserAdmin);
       
     } catch (error) {
-      console.error('💥 Unexpected error checking admin status:', error);
+      console.error('Unexpected error checking admin status:', error);
       setIsAdmin(false);
       setAdminCache(user.id, false);
     }
@@ -226,8 +218,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshClaims = async () => {
     if (user) {
-      console.log('🔄 Refreshing claims...');
-      // Clear cache to force recheck
+      console.log('Refreshing claims...');
       const cache = getAdminCache();
       delete cache[user.id];
       sessionStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify(cache));

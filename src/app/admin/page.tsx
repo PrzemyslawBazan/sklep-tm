@@ -93,13 +93,11 @@ export default function AdminPage() {
 
     return (
         <div className="min-h-screen bg-[#FAF9F8] flex font-[system-ui]">
-            {/* Sidebar */}
             <aside
                 className={`${
                     sidebarOpen ? 'w-60' : 'w-14'
                 } bg-[#F3F2F1] border-r border-[#EDEBE9] transition-all duration-200 flex flex-col`}
             >
-                {/* Header */}
                 <div className="h-12 px-4 flex items-center justify-between border-b border-[#EDEBE9]">
                     {sidebarOpen && (
                         <span className="text-sm font-semibold text-[#323130]">Admin Panel</span>
@@ -117,7 +115,6 @@ export default function AdminPage() {
                     </button>
                 </div>
 
-                {/* Navigation */}
                 <nav className="flex-1 py-2">
                     {menuItems.map((item) => {
                         const IconComponent = item.icon;
@@ -144,7 +141,6 @@ export default function AdminPage() {
                     })}
                 </nav>
 
-                {/* User */}
                 <div className="border-t border-[#EDEBE9] p-3">
                     <div className={`flex items-center gap-2.5 ${!sidebarOpen && 'justify-center'}`}>
                         <div className="w-8 h-8 bg-[#0078D4] rounded-sm flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
@@ -160,9 +156,7 @@ export default function AdminPage() {
                 </div>
             </aside>
 
-            {/* Main */}
             <main className="flex-1 overflow-auto">
-                {/* Top bar */}
                 <div className="h-12 bg-white border-b border-[#EDEBE9] px-6 flex items-center">
                     <nav className="flex items-center gap-1.5 text-sm">
                         <span className="text-[#0078D4] hover:underline cursor-pointer">Home</span>
@@ -176,7 +170,6 @@ export default function AdminPage() {
                 <div className="p-6">
                     <SuccessMessage show={showSuccess} />
 
-                    {/* Page header */}
                     <div className="mb-6">
                         <h1 className="text-xl font-semibold text-[#323130]">
                             {menuItems.find(item => item.id === activeView)?.label}
@@ -189,10 +182,8 @@ export default function AdminPage() {
                         </p>
                     </div>
 
-                    {/* Content */}
                     {activeView === 'overview' && (
                         <div className="space-y-6">
-                            {/* Stats - Azure tile layout */}
                             <div className="grid grid-cols-3 gap-px bg-[#EDEBE9]">
                                 <div className="bg-white p-5">
                                     <div className="flex items-start justify-between">
@@ -223,7 +214,6 @@ export default function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Empty state */}
                             <div className="bg-white border border-[#EDEBE9] p-8">
                                 <div className="text-center">
                                     <p className="text-sm text-[#605E5C]">Wybierz metodę z panelu bocznego aby rozpocząć.</p>
