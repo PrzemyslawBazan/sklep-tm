@@ -86,9 +86,9 @@ export default function AdminPage() {
 
     const menuItems = [
         { id: 'overview' as AdminView, label: 'Przegląd', icon: LayoutDashboard },
-        { id: 'add' as AdminView, label: 'Add Product', icon: Plus },
-        { id: 'update' as AdminView, label: 'Update Product', icon: Edit },
-        { id: 'delete' as AdminView, label: 'Delete Product', icon: Trash2 },
+        { id: 'add' as AdminView, label: 'Dodaj usługę', icon: Plus },
+        { id: 'update' as AdminView, label: 'Zaktualizuj usługę', icon: Edit },
+        { id: 'delete' as AdminView, label: 'Usuń usługę', icon: Trash2 },
     ];
 
     return (

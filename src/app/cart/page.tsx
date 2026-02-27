@@ -51,7 +51,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F8] font-[system-ui]">
-      {/* Top Navigation Bar */}
       <div className="h-12 bg-white border-b border-[#EDEBE9] px-6 flex items-center">
         <nav className="flex items-center gap-1.5 text-sm">
           <button
@@ -94,10 +93,8 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Cart Items */}
             <div className="lg:col-span-2">
               <div className="bg-white border border-[#EDEBE9]">
-                {/* Table Header */}
                 <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9] text-xs font-semibold text-[#605E5C] uppercase tracking-wide">
                   <div className="col-span-5">Usługa</div>
                   <div className="col-span-3 text-center">Ilość</div>
@@ -105,14 +102,12 @@ export default function CartPage() {
                   <div className="col-span-1"></div>
                 </div>
 
-                {/* Items */}
                 {cart.map((item, index) => (
                   <div
                     key={item.serviceId}
                     className={`${index !== cart.length - 1 ? 'border-b border-[#EDEBE9]' : ''}`}
                   >
                     <div className="grid grid-cols-12 gap-4 px-4 py-4 items-center">
-                      {/* Service Info */}
                       <div className="col-span-5">
                         <h3 className="text-sm font-medium text-[#323130]">{item.name}</h3>
                         <p className="text-xs text-[#605E5C] mt-0.5">
@@ -120,7 +115,6 @@ export default function CartPage() {
                         </p>
                       </div>
 
-                      {/* Quantity Controls */}
                       <div className="col-span-3 flex justify-center">
                         <div className="inline-flex items-center border border-[#8A8886] rounded-sm">
                           <button
@@ -141,14 +135,12 @@ export default function CartPage() {
                         </div>
                       </div>
 
-                      {/* Item Total */}
                       <div className="col-span-3 text-right">
                         <span className="text-sm font-semibold text-[#323130]">
                           {formatPrice(item.price * item.quantity)}
                         </span>
                       </div>
 
-                      {/* Remove Button */}
                       <div className="col-span-1 text-right">
                         <button
                           onClick={() => removeFromCart(item.serviceId, user?.id)}
@@ -160,7 +152,6 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {/* Note Field */}
                     <div className="px-4 pb-4">
                       <label
                         htmlFor={`note-${item.serviceId}`}
@@ -182,7 +173,6 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Summary Panel */}
             <div className="lg:col-span-1">
               <div className="bg-white border border-[#EDEBE9] sticky top-6">
                 <div className="px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9]">

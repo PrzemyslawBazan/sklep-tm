@@ -3,9 +3,10 @@ import { Save } from 'lucide-react';
 interface SubmitButtonProps {
     isSubmitting: boolean;
     onClick: () => void;
+    Component: string
 }
 
-export default function SubmitButton({ isSubmitting, onClick }: SubmitButtonProps) {
+export default function SubmitButton({ isSubmitting, onClick, Component }: SubmitButtonProps) {
     return (
         <div className="flex justify-end pt-5 border-t border-[#EDEBE9]">
             <button
@@ -22,7 +23,7 @@ export default function SubmitButton({ isSubmitting, onClick }: SubmitButtonProp
                 ) : (
                     <>
                         <Save className="h-4 w-4 mr-2" />
-                        Stwórz usługę
+                       { Component === "create" ? "Stwórz usługę" : "Zaktualizuj usługe" }
                     </>
                 )}
             </button>

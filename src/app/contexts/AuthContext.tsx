@@ -39,7 +39,6 @@ const setAdminCache = (userId: string, isAdmin: boolean) => {
     cache[userId] = isAdmin;
     sessionStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify(cache));
   } catch {
-    // Ignore storage errors
   }
 };
 

@@ -10,8 +10,8 @@ export const fetchActiveServices = async (): Promise<Service[]> => {
       .from('services')
       .select('*', { count: 'exact' });
 
-    console.log('📊 Total services in database:', count);
-    console.log('📋 All services:', allServices);
+    console.log('Total services in database:', count);
+    console.log('All services:', allServices);
 
     const { data, error } = await supabase
       .from('services')
@@ -43,7 +43,8 @@ export const fetchActiveServices = async (): Promise<Service[]> => {
         requirements: service.requirements,
         ud_code: service.ud_code,
         start_time: service.start_time,
-        finish_time: service.finish_time
+        finish_time: service.finish_time,
+        image_url: service.image_url
       })) || [];
 
 
@@ -73,6 +74,7 @@ export const updateService = async (serviceId: string, serviceData: {
   ud_code: number | null;
   start_time: string | number | null;
   finish_time: string | number | null;
+  image_url: string | null;
 }, isAdmin: boolean): Promise<{ success: boolean; data?: Service; error?: string }> => {
   try {
     if (!isAdmin) {
@@ -99,7 +101,8 @@ export const updateService = async (serviceId: string, serviceData: {
       requirements: serviceData.requirements,
       ud_code: serviceData.ud_code,
       start_time: serviceData.start_time,
-      finish_time: serviceData.finish_time
+      finish_time: serviceData.finish_time,
+      image_url: serviceData.image_url
     };
 
     const { data, error } = await supabase
@@ -110,11 +113,11 @@ export const updateService = async (serviceId: string, serviceData: {
       .single();
 
     if (error) {
-      console.error('❌ Supabase error updating service:', error);
+      console.error(' Supabase error updating service:', error);
       throw new Error(error.message);
     }
 
-    console.log('✅ Service updated successfully:', data);
+    console.log(' Service updated successfully:', data);
 
     const updatedService: Service = {
       id: data.id,
@@ -135,12 +138,13 @@ export const updateService = async (serviceId: string, serviceData: {
       requirements: data.requirements,
       ud_code: data.ud_code,
       start_time: data.start_time,
-      finish_time: data.finish_time
+      finish_time: data.finish_time,
+      image_url: data.image_url
     };
 
     return { success: true, data: updatedService };
   } catch (error) {
-    console.error('❌ Error updating service:', error);
+    console.error('Error updating service:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -167,7 +171,8 @@ export const createService = async (serviceData: {
   requirements: string[];
   ud_code: number | null,
   start_time: string | number | null,
-  finish_time: string | number | null
+  finish_time: string | number | null,
+  image_url: string | null
 }, isAdmin: boolean): Promise<{ success: boolean; data?: Service; error?: string }> => {
   try {
     if (!isAdmin) {
@@ -193,7 +198,8 @@ export const createService = async (serviceData: {
       requirements: serviceData.requirements,
       ud_code: serviceData.ud_code,
       start_time: serviceData.start_time,
-      finish_time: serviceData.finish_time
+      finish_time: serviceData.finish_time,
+      image_url: serviceData.image_url
     };
 
 
@@ -204,11 +210,11 @@ export const createService = async (serviceData: {
       .single();
 
     if (error) {
-      console.error('❌ Supabase error creating service:', error);
+      console.error('Supabase error creating service:', error);
       throw new Error(error.message);
     }
 
-    console.log('✅ Service created successfully:', data);
+    console.log('Service created successfully:', data);
     const createdService: Service = {
       id: data.id,
       name: data.name,
@@ -228,12 +234,13 @@ export const createService = async (serviceData: {
       requirements: data.requirements,
       ud_code: data.ud_code,
       start_time: data.start_time,
-      finish_time: data.finish_time
+      finish_time: data.finish_time,
+      image_url: data.image_url
     };
 
     return { success: true, data: createdService };
   } catch (error) {
-    console.error('❌ Error creating service:', error);
+    console.error('Error creating service:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error occurred' 

@@ -19,6 +19,7 @@ export interface Service {
   ud_code: number | null,
   start_time: string | number | null,
   finish_time: string | number | null
+  image_url: string | null
 }
 export interface CartItem {
   serviceId: string;
@@ -48,6 +49,7 @@ export interface CreateServiceData {
   ud_code: number | null,
   start_time: string | number | null
   finish_time: string | number | null
+  image_url: string | null;
 }
 
 

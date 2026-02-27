@@ -15,6 +15,7 @@ import supabase from '@/app/lib/supabase';
 import { useEffect } from 'react';
 
 import DurationField from './DurationField';
+import PhotoUploadField from './PhotoUploadField';
 
 export interface ServiceData {
     name: string;
@@ -35,6 +36,7 @@ export interface ServiceData {
     ud_code: string | number | null;
     start_time: string | null;
     finish_time: string | null;
+    image_url: string | null;
 }
 
 interface ServiceFormProps {
@@ -61,7 +63,8 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
         requirements: [],
         ud_code: '',
         start_time: '',
-        finish_time: ''
+        finish_time: '',
+        image_url: ''
     });
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -86,6 +89,38 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
     };
     const handleUdCodeAdded = (code: { id: number; name: string }) => {
     setUdCodes(prev => [...prev, code]);
+    };
+
+    const handlePhotoChange = async (file: File | null, previewUrl: string | null) => {
+        if (!file) {
+            setFormData(prev => ({ ...prev, image_url: null }));
+            return;
+        }
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('service-images') // your bucket name
+                .upload(fileName, file);
+
+            if (uploadError) {
+                console.error('Upload error:', uploadError);
+                setError('Failed to upload image');
+                return;
+            }
+
+            const { data } = supabase.storage
+                .from('service-images')
+                .getPublicUrl(fileName);
+
+            setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
+
+        } catch (err) {
+            console.error('Unexpected upload error:', err);
+            setError('Failed to upload image');
+        }
     };
 
     
@@ -192,7 +227,8 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     requirements: [],
                     ud_code: '',
                     start_time: '',
-                    finish_time: ''
+                    finish_time: '',
+                    image_url: ''
                 });
             } else {
                 setError(result.error || 'Failed to create service');
@@ -258,9 +294,13 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     onInputChange={handleInputChange}
                 />
                 
+                <PhotoUploadField onPhotoChange={handlePhotoChange}
+                currentPhotoUrl={formData.image_url}
+                />
                 <SubmitButton 
                     isSubmitting={isSubmitting}
                     onClick={handleSubmit}
+                    Component='create'
                 />
             </div>
         </div>

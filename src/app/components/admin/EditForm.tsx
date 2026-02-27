@@ -80,7 +80,8 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 requirements: data.requirements ?? [],
                 ud_code: data.ud_code ?? null,
                 start_time: data.start_time ?? '',
-                finish_time: data.finish_time ?? ''
+                finish_time: data.finish_time ?? '',
+                image_url: data.image_url
             });
         }
         if (error) setError('Failed to load service');
@@ -132,10 +133,9 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
 
     return (
         <div>
-            {/* Service selector bar */}
             <div className="p-4 border-b bg-gray-50 flex items-center gap-3">
                 <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                    Select Service
+                    Wybierz usługę
                 </label>
                 <select
                     className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -143,7 +143,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                     onChange={e => { setSelectedServiceId(e.target.value || null)
                     }}
                 >
-                    <option value="">-- Choose a service to edit --</option>
+                    <option value="">Wybierz usługę do edycji</option>
                     {services.map(service => (
                         <option key={service.id} value={service.id}>
                             {service.name}
@@ -152,13 +152,12 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 </select>
             </div>
 
-            {/* Form area */}
             {!selectedServiceId && (
-                <p className="p-6 text-gray-400 text-sm">Select a service above to start editing.</p>
+                <p className="p-6 text-gray-400 text-sm">Wybierz usługę powyżej aby rozpocząć edycję.</p>
             )}
 
             {selectedServiceId && isLoading && (
-                <p className="p-6 text-gray-400 text-sm">Loading service...</p>
+                <p className="p-6 text-gray-400 text-sm">Ładowanie usługi...</p>
             )}
 
             {selectedServiceId && !isLoading && formData && (
@@ -180,7 +179,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                     <DurationField formData={formData} onInputChange={handleInputChange} />
 
                     {error && <p className="text-red-500 text-sm">{error}</p>}
-                    <SubmitButton isSubmitting={isSubmitting} onClick={handleSubmit} />
+                    <SubmitButton isSubmitting={isSubmitting} onClick={handleSubmit} Component='edit' />
                 </div>
             )}
         </div>
