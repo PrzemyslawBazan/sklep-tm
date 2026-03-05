@@ -70,6 +70,8 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [udCodes, setUdCodes] = useState<{ id: number; name: string }[]>([]);
+    const [formKey, setFormKey] = useState(0);
+
     useEffect(() => {
         const fetchUdCodes = async () => {
             const { data } = await supabase.from('ud_codes').select('*');
@@ -102,7 +104,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
             const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
             const { error: uploadError } = await supabase.storage
-                .from('service-images') // your bucket name
+                .from('service_images') // your bucket name
                 .upload(fileName, file);
 
             if (uploadError) {
@@ -230,6 +232,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     finish_time: '',
                     image_url: ''
                 });
+                setFormKey(prev => prev + 1);
             } else {
                 setError(result.error || 'Failed to create service');
             }
@@ -294,7 +297,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     onInputChange={handleInputChange}
                 />
                 
-                <PhotoUploadField onPhotoChange={handlePhotoChange}
+                <PhotoUploadField key={formKey} onPhotoChange={handlePhotoChange}
                 currentPhotoUrl={formData.image_url}
                 />
                 <SubmitButton 

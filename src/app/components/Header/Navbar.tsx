@@ -10,6 +10,8 @@ import { navBarAdmin, navBarPath } from './menu.data';
 import LogoSvg from '../../utils/LOGO.svg'; 
 import { AuthButtons } from './AuthButtons';
 import { useClearCartOnLogout } from '@/app/contexts/CartContext';
+import { CartButton } from '../Buttons/NavBarCartButton/NavBarCartButton';
+import Cart from '../Card';
 
 export default function Navbar() {
   const { user, logout, isAdmin } = useAuth();
@@ -98,6 +100,7 @@ export default function Navbar() {
                   {item.name}
                 </Link>
               ))}
+              
             </div>
           </div>
 
@@ -115,6 +118,9 @@ export default function Navbar() {
             </Link>
             
             <AuthButtons />
+            <div className="w-px h-6 bg-zinc-200 mx-1" />
+
+            <CartButton />
           </div>
 
           {/* Mobile Menu Button - Animated Hamburger */}
@@ -150,6 +156,7 @@ export default function Navbar() {
             ${isMenuOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'}
           `}
         >
+          <CartButton />
           <div className="pt-2 space-y-1">
             {navBarPath.map((item, index) => (
               <Link 

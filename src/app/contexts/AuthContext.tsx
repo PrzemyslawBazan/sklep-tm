@@ -57,16 +57,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const getInitialSession = async () => {
       try {
-        console.log('🔄 Getting initial session...');
+        console.log('Getting initial session...');
         const { data: { session } } = await supabase.auth.getSession();
         
         if (mounted && session?.user) {
-          console.log('👤 User found:', session.user.id);
+          console.log(' User found:', session.user.id);
           setUser(session.user);
           
           const cache = getAdminCache();
           if (cache[session.user.id] !== undefined) {
-            console.log('📦 Using cached admin status');
+            console.log(' Using cached admin status');
             setIsAdmin(cache[session.user.id]);
             lastCheckedUserRef.current = session.user.id;
           } else {
@@ -129,14 +129,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAdminStatus = async (user: User) => {
     if (lastCheckedUserRef.current === user.id) {
-      console.log('⏭️ Already checked this user, skipping');
+      console.log('Already checked this user, skipping');
       return;
     }
     
     lastCheckedUserRef.current = user.id;
 
     try {
-      console.log('🔍 Checking admin status for user:', user.id);
+      console.log('Checking admin status for user:', user.id);
       
       // Quick table access check
       const { count, error: countError } = await supabase
@@ -160,7 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .maybeSingle();
 
       const isUserAdmin = !error && !!adminData;
-      console.log('👑 Admin check result:', isUserAdmin);
+      console.log('Admin check result:', isUserAdmin);
       
       setIsAdmin(isUserAdmin);
       setAdminCache(user.id, isUserAdmin);

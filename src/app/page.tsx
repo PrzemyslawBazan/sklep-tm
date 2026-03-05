@@ -309,56 +309,6 @@ export default function Home() {
   })()}
   </div>
 </main>
-      <div className="fixed md:bottom-6 md:right-6 bottom-4 right-4 z-50">
-      <button
-            onClick={goToCart}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            aria-label={`Shopping cart with ${totalItems} items`}
-            className="group relative inline-flex items-center justify-center gap-2.5 
-                       h-11 px-5 
-                       bg-zinc-900 hover:bg-zinc-800 
-                       border border-zinc-800 hover:border-zinc-700
-                       rounded-xl
-                       text-zinc-100
-                       shadow-lg shadow-black/20
-                       transition-all duration-200 ease-out
-                       hover:shadow-xl hover:shadow-black/30
-                       hover:-translate-y-0.5
-                       active:translate-y-0 active:shadow-md
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
-          >
-            <svg
-              className="w-5 h-5 text-zinc-400 group-hover:text-zinc-200 transition-colors"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-              />
-            </svg>
-
-            <span className="text-sm font-medium">Koszyk</span>
-
-            {totalItems > 0 && (
-              <span
-                className="inline-flex items-center justify-center 
-                           min-w-[1.375rem] h-[1.375rem] px-1.5
-                           bg-emerald-500 
-                           text-zinc-950 text-xs font-semibold
-                           rounded-full
-                           transition-transform duration-200
-                           group-hover:scale-110"
-              >
-                {totalItems > 99 ? "99+" : totalItems}
-              </span>
-            )}
-          </button>
-      </div>
     </div>
   );
 }
