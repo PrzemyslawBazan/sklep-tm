@@ -176,6 +176,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(formData);
     onSubmit(formData);
   };
 

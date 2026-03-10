@@ -1,6 +1,6 @@
 class PageConfig {
     HOME = '/'
-    OFFER = '/offer'
+    OFFER = 'https://taxm.pl/uslugi/ksiegowosc/'
     ACCOUNTING = 'https://taxm.pl/blog/'
 
     CONTACT = 'https://taxm.pl/kontakt/'
