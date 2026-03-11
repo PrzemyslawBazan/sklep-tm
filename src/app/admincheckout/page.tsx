@@ -19,63 +19,8 @@ export default function CheckoutPage() {
   const clearCart = useClearCart();
   const isHydrated = useIsCartHydrated();
   const { user, isAdmin } = useAuth();
-  const pathname = usePathname();
+  const pathName = usePathname();
 
-  // Fetch saved customer data on mount
-  useEffect(() => {
-    const fetchSavedData = async () => {
-      if (!user?.id) return;
-
-      try {
-        const { data: customerData, error } = await supabase
-          .from('customers')
-          .select(`
-            *,
-            addresses (
-              street,
-              city,
-              postal_code,
-              country
-            )
-          `)
-          .eq('user_id', user.id)
-          .limit(1)
-          .single();
-
-        if (error && error.code !== 'PGRST116') throw error;
-
-        if (customerData) {
-          const customer = customerData;
-          // Handle both single object and array for addresses
-          const addressData = Array.isArray(customer.addresses) 
-            ? customer.addresses[0] 
-            : customer.addresses;
-
-          setSavedCustomerData({
-            email: customer.email || '',
-            companyName: customer.company_name || '',
-            nip: customer.nip || '',
-            address: {
-              street: addressData?.street || '',
-              city: addressData?.city || '',
-              postalCode: addressData?.postal_code || '',
-              country: 'PL',
-            },
-            contactPerson: {
-              firstName: customer.contact_first_name || '',
-              lastName: customer.contact_last_name || '',
-              phone: customer.contact_phone || '',
-              position: customer.contact_position || '',
-            },
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching saved customer data:', error);
-      }
-    };
-
-    fetchSavedData();
-  }, [user]);
 
   // Redirect if cart is empty after hydration
   useEffect(() => {
@@ -117,22 +62,18 @@ export default function CheckoutPage() {
         .from('customers')
         .select('*')
         .eq('user_id', user.id)
-        .eq('email', customer.email)
+        .eq('nip', customer.nip)
         .limit(1)
         .single();
-
+    console.log(`customer exists: ${existingCustomer}`);
+    
       if (existingCustomerError && existingCustomerError.code !== 'PGRST116') {
         throw existingCustomerError;
       }
 
-      let finalCustomerData;
-
-      if (existingCustomer) {
-        // Customer exists, use their data
-        finalCustomerData = existingCustomer;
-      } else {
+    let finalCustomerData;
         // Create new customer (without stripe_customer_id - it will be created by API)
-        const { data: newCustomerData, error: customerError } = await supabase
+    const { data: newCustomerData, error: customerError } = await supabase
           .from('customers')
           .insert({
             user_id: user.id,
@@ -148,9 +89,8 @@ export default function CheckoutPage() {
           .select()
           .single();
 
-        if (customerError) throw customerError;
-        finalCustomerData = newCustomerData;
-      }
+    if (customerError) throw customerError;
+    finalCustomerData = newCustomerData;
 
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
@@ -292,7 +232,7 @@ export default function CheckoutPage() {
           onSubmit={handleCheckout} 
           loading={loading} 
           initialData={savedCustomerData}
-          path={pathname}
+          path={pathName}
           onCustomerSelect={handleCustomerSelect}
         />
       </div>

@@ -12,7 +12,7 @@ export default function CartPage() {
   const totalItems = useTotalItems();
   const isHydrated = useIsCartHydrated();
   const router = useRouter();
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
 
   const calculateTotals = () => {
     const gross = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -31,7 +31,7 @@ export default function CartPage() {
   };
 
   const handleCheckout = () => {
-    router.push('/checkout');
+    return isAdmin ? router.push('/admincheckout') : router.push('/checkout');
   };
 
   const goBack = (): void => {

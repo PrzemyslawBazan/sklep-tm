@@ -6,6 +6,7 @@ interface CheckoutFormProps {
   onSubmit: (customer: Customer) => void;
   loading: boolean;
   initialData?: Customer | null;
+  path: string
   onCustomerSelect?: (stripeCustomerId: string | null) => void;
 }
 
@@ -19,7 +20,7 @@ interface StripeCustomer {
   };
 }
 
-export default function CheckoutForm({ onSubmit, loading, initialData, onCustomerSelect  }: CheckoutFormProps) {
+export default function CheckoutForm({ onSubmit, loading, initialData, onCustomerSelect, path  }: CheckoutFormProps) {
   const { isAdmin } = useAuth();
   const [stripeCustomers, setStripeCustomers] = useState<StripeCustomer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
@@ -185,7 +186,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {isAdmin && (
+      {isAdmin && path.includes("admincheckout") && (
         <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5">
           <h3 className="text-xs font-bold mb-4 text-amber-400 uppercase tracking-widest">
             Panel Administratora
@@ -279,7 +280,9 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               value={formData.contactPerson.firstName}
               onChange={handleChange}
               required
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
+              
             />
           </div>
           <div>
@@ -290,7 +293,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               value={formData.contactPerson.lastName}
               onChange={handleChange}
               required
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
           <div>
@@ -301,7 +305,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               value={formData.contactPerson.phone}
               onChange={handleChange}
               required
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
           <div>
@@ -311,7 +316,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               name="contactPerson.position"
               value={formData.contactPerson.position}
               onChange={handleChange}
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
         </div>
@@ -328,7 +334,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               value={formData.address.street}
               onChange={handleChange}
               required
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
           <div>
@@ -339,7 +346,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               value={formData.address.city}
               onChange={handleChange}
               required
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
           <div>
@@ -352,7 +360,8 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
               required
               pattern="[0-9]{2}-[0-9]{3}"
               placeholder="00-000"
-              className={normalInputClass}
+              disabled={isCompanyDataLocked}
+              className={isCompanyDataLocked ? lockedInputClass : normalInputClass}
             />
           </div>
         </div>
