@@ -22,8 +22,8 @@ function SuccessContent() {
     console.log('Session ID:', sessionId);
     
     if (sessionId && !hasVerified.current) {
-      verifyPayment(sessionId);
       hasVerified.current = true;
+      verifyPayment(sessionId);
       clearCart(user?.id);
     } else if (!sessionId) {
       console.log('No session ID found, redirecting...');
