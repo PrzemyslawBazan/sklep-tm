@@ -18,18 +18,16 @@ function SuccessContent() {
   const [shortId, setShortId] = useState<string>();
 
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    console.log('Session ID:', sessionId);
-    
-    if (sessionId && !hasVerified.current) {
-      hasVerified.current = true;
-      verifyPayment(sessionId);
-      clearCart(user?.id);
-    } else if (!sessionId) {
-      console.log('No session ID found, redirecting...');
-      router.push('/');
-    }
-  }, []); 
+  const sessionId = searchParams.get('session_id');
+  
+  if (sessionId && !sessionStorage.getItem(`verified_${sessionId}`)) {
+    sessionStorage.setItem(`verified_${sessionId}`, 'true');
+    verifyPayment(sessionId);
+    clearCart(user?.id);
+  } else if (!sessionId) {
+    router.push('/');
+  }
+}, []);
 
   const shortenOrderId = (order : any) => {
     console.log(order)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Customer } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -26,6 +26,12 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [isCompanyDataLocked, setIsCompanyDataLocked] = useState(false);
+
+  const [customerDropdownOpen, setCustomerDropdownOpen] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState("");
+  const customerDropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   
   const [formData, setFormData] = useState<Customer>({
     email: '',
@@ -50,6 +56,17 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
       fetchStripeCustomers();
     }
   }, [isAdmin]);
+  
+  useEffect(() => {
+  const handler = (e: MouseEvent) => {
+    if (!customerDropdownRef.current?.contains(e.target as Node)) {
+      setCustomerDropdownOpen(false);
+      setCustomerSearch("");
+    }
+  };
+  document.addEventListener("mousedown", handler);
+  return () => document.removeEventListener("mousedown", handler);
+}, []);
 
   const fetchStripeCustomers = async () => {
     setLoadingCustomers(true);
@@ -185,36 +202,105 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
   const normalInputClass = "w-full px-3.5 py-2.5 border border-stone-200 rounded-xl bg-stone-50 text-sm text-stone-800 placeholder:text-stone-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 focus:outline-none hover:border-stone-300 transition-all";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {isAdmin && path.includes("admincheckout") && (
-        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5">
-          <h3 className="text-xs font-bold mb-4 text-amber-400 uppercase tracking-widest">
-            Panel Administratora
-          </h3>
-          <div>
-            <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-widest">
-              Wybierz klienta ze Stripe
-            </label>
-            <select
-              value={selectedCustomerId}
-              onChange={(e) => handleCustomerSelect(e.target.value)}
-              disabled={loadingCustomers}
-              className="w-full px-3.5 py-2.5 border border-slate-600 rounded-xl bg-slate-800 text-slate-200 text-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-900 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="">-- Wybierz klienta lub wypełnij ręcznie --</option>
-              {stripeCustomers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name || customer.email} ({customer.email})
-                </option>
-              ))}
-            </select>
-            {loadingCustomers && (
-              <p className="text-xs text-slate-400 mt-2">Ładowanie klientów...</p>
-            )}
-          </div>
-        </div>
-      )}
+        <form onSubmit={handleSubmit} className="space-y-5">
+  {isAdmin && path.includes("admincheckout") && (
+    <div className="border border-blue-100 rounded-2xl p-6 shadow-sm bg-blue-50/30">
+      <h3 className="text-xs font-bold mb-4 text-blue-400 uppercase tracking-widest">
+        Panel Administratora
+      </h3>
+      <div className="relative" ref={customerDropdownRef}>
+        <label className="block text-xs font-semibold mb-1.5 text-stone-400 uppercase tracking-widest">
+          Wybierz klienta ze Stripe
+        </label>
 
+        <div
+          onClick={() => {
+            setCustomerDropdownOpen(true);
+            setTimeout(() => searchInputRef.current?.focus(), 0);
+          }}
+          className={`w-full flex items-center justify-between px-3.5 py-2.5 border rounded-xl bg-white text-sm transition-all cursor-text ${
+            customerDropdownOpen
+              ? "border-blue-300 ring-2 ring-blue-50"
+              : "border-stone-200 hover:border-blue-200"
+          }`}
+        >
+          {customerDropdownOpen ? (
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={customerSearch}
+              onChange={(e) => setCustomerSearch(e.target.value)}
+              placeholder="Szukaj po nazwie lub email..."
+              className="flex-1 bg-transparent text-stone-700 placeholder-stone-300 text-sm focus:outline-none"
+            />
+          ) : (
+            <span className={`flex-1 truncate text-sm ${selectedCustomerId ? "text-stone-700" : "text-stone-300"}`}>
+              {loadingCustomers
+                ? "Ładowanie klientów..."
+                : selectedCustomerId
+                ? stripeCustomers.find((c) => c.id === selectedCustomerId)?.name ||
+                  stripeCustomers.find((c) => c.id === selectedCustomerId)?.email ||
+                  "Wybierz klienta"
+                : "Wybierz klienta lub wypełnij ręcznie"}
+            </span>
+          )}
+
+          <svg
+            className={`w-3.5 h-3.5 text-blue-200 transition-transform duration-200 shrink-0 ml-2 ${customerDropdownOpen ? "rotate-180" : ""}`}
+            viewBox="0 0 12 12" fill="none"
+          >
+            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
+        {customerDropdownOpen && (
+          <div className="absolute z-50 mt-1.5 w-full bg-white border border-stone-200 rounded-xl shadow-lg shadow-blue-50/80 overflow-hidden">
+            <div className="max-h-48 overflow-y-auto">
+              {stripeCustomers
+                .filter((c) => {
+                  const q = customerSearch.toLowerCase();
+                  return (
+                    (c.name || "").toLowerCase().includes(q) ||
+                    (c.email || "").toLowerCase().includes(q)
+                  );
+                })
+                .map((customer) => (
+                  <button
+                    key={customer.id}
+                    type="button"
+                    onClick={() => {
+                      handleCustomerSelect(customer.id);
+                      setCustomerDropdownOpen(false);
+                      setCustomerSearch("");
+                    }}
+                    className={`w-full text-left px-3.5 py-2.5 text-sm transition-colors flex flex-col gap-0.5 border-l-2 ${
+                      selectedCustomerId === customer.id
+                        ? "bg-blue-50/60 border-l-blue-300 text-stone-800"
+                        : "border-l-transparent text-stone-500 hover:bg-blue-50/40 hover:text-stone-700"
+                    }`}
+                  >
+                    <span className="font-medium text-[13px]">{customer.name || customer.email}</span>
+                    {customer.name && (
+                      <span className="text-[11px] text-stone-400">{customer.email}</span>
+                    )}
+                  </button>
+                ))}
+              {stripeCustomers.filter((c) => {
+                const q = customerSearch.toLowerCase();
+                return (c.name || "").toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+              }).length === 0 && (
+                <p className="text-xs text-stone-300 text-center py-4">Brak wyników</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {loadingCustomers && (
+        <p className="text-[11px] text-blue-300 mt-1.5">Ładowanie klientów...</p>
+      )}
+    </div>
+  )}
       <div className={`border rounded-2xl p-6 shadow-sm transition-colors ${isCompanyDataLocked ? 'bg-slate-50 border-slate-200' : 'bg-white border-stone-200'}`}>
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-xs font-bold text-stone-800 uppercase tracking-widest">Dane firmy</h3>
