@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Trash2, Plus, Minus, ShoppingCart, ChevronRight } from 'lucide-react';
 import { useCart, useCartActions, useTotalItems, useIsCartHydrated } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
 
 export default function CartPage() {
   const cart = useCart();
@@ -12,6 +13,8 @@ export default function CartPage() {
   const totalItems = useTotalItems();
   const isHydrated = useIsCartHydrated();
   const router = useRouter();
+  const [inputValue, setInputValue] = useState<Record<string, string>>({});
+
   const { user, isAdmin } = useAuth()
 
   const calculateTotals = () => {
@@ -123,9 +126,31 @@ export default function CartPage() {
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-10 text-center text-sm text-[#323130]">
-                            {item.quantity}
-                          </span>
+                              <input
+                              type="number"
+                              value={inputValue[item.serviceId] ?? item.quantity}
+                              min={1}
+                              onChange={(e) => {
+                                setInputValue((prev) => ({ ...prev, [item.serviceId]: e.target.value }));
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val) && val > 0) {
+                                  updateQuantity(item.serviceId, val, user?.id);
+                                }
+                              }}
+                              onBlur={() => {
+                                const raw = inputValue[item.serviceId];
+                                const val = parseInt(raw, 10);
+                                if (!raw || isNaN(val) || val < 1) {
+                                  updateQuantity(item.serviceId, 1, user?.id);
+                                }
+                                setInputValue((prev) => {
+                                  const next = { ...prev };
+                                  delete next[item.serviceId];
+                                  return next;
+                                });
+                              }}
+                              className="w-10 text-center text-sm text-[#323130] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
                           <button
                             onClick={() => updateQuantity(item.serviceId, item.quantity + 1, user?.id)}
                             className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"

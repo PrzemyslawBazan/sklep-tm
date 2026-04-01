@@ -177,9 +177,7 @@ function SuccessContent() {
       <div className="max-w-3xl mx-auto px-4">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
 
-          {/* ── Hero banner ─────────────────────────────────────────────── */}
           <div className="relative bg-blue-600 px-10 py-14 text-center overflow-hidden">
-            {/* Subtle dot pattern */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.07]"
               style={{
@@ -187,12 +185,9 @@ function SuccessContent() {
                 backgroundSize: '24px 24px',
               }}
             />
-            {/* Emerald glow — top right */}
             <div className="pointer-events-none absolute -top-10 -right-10 h-48 w-48 rounded-full bg-emerald-400 opacity-20 blur-3xl" />
-            {/* Lighter blue glow — bottom left */}
             <div className="pointer-events-none absolute -bottom-10 -left-10 h-48 w-48 rounded-full bg-blue-300 opacity-20 blur-3xl" />
 
-            {/* Rocket */}
             <div className="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border border-white/20" />
               <div className="absolute inset-2 rounded-full border border-white/10" />
@@ -202,20 +197,14 @@ function SuccessContent() {
                 className="w-12 h-12 drop-shadow-lg"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                {/* Exhaust flame */}
                 <ellipse cx="24" cy="41" rx="4" ry="6" fill="#f97316" opacity="0.75" />
                 <ellipse cx="24" cy="40" rx="2.5" ry="4" fill="#fbbf24" opacity="0.95" />
-                {/* Body */}
                 <path d="M24 6 C16 14 14 24 14 32 L24 36 L34 32 C34 24 32 14 24 6Z" fill="white" />
-                {/* Nose shade */}
                 <path d="M24 6 C21 10 20 13 20 16 L24 18 L28 16 C28 13 27 10 24 6Z" fill="#dbeafe" />
-                {/* Porthole */}
                 <circle cx="24" cy="22" r="4" fill="#16a34a" opacity="0.85" />
                 <circle cx="24" cy="22" r="2.5" fill="#4ade80" />
                 <circle cx="23" cy="21" r="0.8" fill="white" opacity="0.8" />
-                {/* Left fin */}
                 <path d="M14 32 L8 38 L14 36 Z" fill="#bfdbfe" />
-                {/* Right fin */}
                 <path d="M34 32 L40 38 L34 36 Z" fill="#bfdbfe" />
               </svg>
             </div>
@@ -228,10 +217,8 @@ function SuccessContent() {
             </p>
           </div>
 
-          {/* ── Body ────────────────────────────────────────────────────── */}
           <div className="p-8 space-y-5">
 
-            {/* Info cards */}
             <section className="grid gap-4 md:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-5">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-slate-800 mb-4">Szczegóły zamówienia</h2>
@@ -262,7 +249,6 @@ function SuccessContent() {
               </div>
             </section>
 
-            {/* Next steps */}
             <section className="rounded-2xl bg-emerald-50 border border-emerald-100 p-5">
               <ul className="grid gap-3 text-sm text-slate-600 md:grid-cols-3">
                 <li className="flex items-start gap-2.5">
@@ -280,7 +266,6 @@ function SuccessContent() {
               </ul>
             </section>
 
-            {/* CTA */}
             <div className="flex justify-center pt-1">
               <button
                 onClick={() => router.push('/')}
