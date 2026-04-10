@@ -64,44 +64,45 @@ export async function POST(request: NextRequest) {
         }
       }
 
-    const { data: completeOrder, error: fetchError } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        customers (
-          id,
-          company_name,
-          email,
-          contact_first_name,
-          contact_last_name,
-          contact_phone,
-          nip,
-          addresses (
-            street,
-            city,
-            postal_code,
-            country
-          )
-        ),
-        order_items (
-          id,
-          name,
-          price,
-          quantity,
-          note,
-          services (
-            name,
-            category,
-            description
+      const { data: completeOrder, error: fetchError } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          customers (
+            id,
+            company_name,
+            email,
+            contact_first_name,
+            contact_last_name,
+            contact_phone,
+            nip,
+            addresses (
+              street,
+              city,
+              postal_code,
+              country
+            )
           ),
-          ud_codes (
-            *
+          order_items (
+            id,
+            name,
+            price,
+            quantity,
+            note,
+            services (
+              name,
+              category,
+              description,
+              ud_codes (
+                id,
+                name
+              )
+            )
           )
-        )
-      `)
-      .eq('id', orderId)
-      .single();
-      
+        `)
+        .eq('id', orderId)
+        .single();
+
       if (fetchError) {
         console.error('Error fetching complete order:', fetchError);
         return NextResponse.json({ 

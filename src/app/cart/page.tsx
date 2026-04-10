@@ -14,8 +14,9 @@ export default function CartPage() {
   const isHydrated = useIsCartHydrated();
   const router = useRouter();
   const [inputValue, setInputValue] = useState<Record<string, string>>({});
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin } = useAuth();
 
   const calculateTotals = () => {
     const gross = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -26,219 +27,238 @@ export default function CartPage() {
 
   const { net, vat, gross } = calculateTotals();
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pl-PL', {
-      style: 'currency',
-      currency: 'PLN',
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(price);
 
-  const handleCheckout = () => {
-    return isAdmin ? router.push('/admincheckout') : router.push('/checkout');
-  };
+  const handleCheckout = () =>
+    isAdmin ? router.push('/admincheckout') : router.push('/checkout');
 
-  const goBack = (): void => {
-    router.back();
+  const goBack = (): void => router.back();
+
+  const handleRemove = (serviceId: string, userId?: string) => {
+    setRemovingId(serviceId);
+    setTimeout(() => {
+      removeFromCart(serviceId, userId);
+      setRemovingId(null);
+    }, 280);
   };
 
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-[#FAF9F8] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-6 h-6 border-2 border-[#EDEBE9] border-t-[#0078D4] rounded-full animate-spin" />
-          <p className="text-sm text-[#605E5C]">Ładowanie...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-['DM_Sans',sans-serif]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-7 h-7 rounded-full border-2 border-gray-200 border-t-blue-600 animate-spin" />
+          <p className="text-sm text-gray-400">Ładowanie...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F8] font-[system-ui]">
-      <div className="h-12 bg-white border-b border-[#EDEBE9] px-6 flex items-center">
-        <nav className="flex items-center gap-1.5 text-sm">
-          <button
-            onClick={goBack}
-            className="flex items-center gap-1.5 text-[#0078D4] hover:underline"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Powrót
-          </button>
-          <ChevronRight className="w-3 h-3 text-[#A19F9D]" />
-          <span className="text-[#323130]">Koszyk</span>
-        </nav>
-      </div>
+    <>
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; transform: translateX(0); }
+          to   { opacity: 0; transform: translateX(16px); }
+        }
+      `}</style>
 
-      <div className="max-w-4xl mx-auto px-6 py-6">
-        {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-[#323130]">Koszyk</h1>
-          <p className="text-sm text-[#605E5C] mt-1">
-            {totalItems} {totalItems === 1 ? 'przedmiot' : 'przedmiotów'} w koszyku
-          </p>
-        </div>
+      <div className="min-h-screen bg-gray-50 font-['DM_Sans',sans-serif]">
 
-        {cart.length === 0 ? (
-          /* Empty State */
-          <div className="bg-white border border-[#EDEBE9] p-12 text-center">
-            <div className="w-12 h-12 bg-[#F3F2F1] rounded-sm flex items-center justify-center mx-auto mb-4">
-              <ShoppingCart className="w-6 h-6 text-[#A19F9D]" />
-            </div>
-            <h2 className="text-[#323130] font-semibold mb-1">Twój koszyk jest pusty</h2>
-            <p className="text-sm text-[#605E5C] mb-6">
-              Dodaj usługi do koszyka, aby kontynuować
-            </p>
+        <div className="h-14 px-8 flex items-center bg-white border-b border-gray-200">
+          <nav className="flex items-center gap-2 text-sm">
             <button
               onClick={goBack}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#0078D4] hover:bg-[#106EBE] text-white text-sm rounded-sm transition-colors"
+              className="flex items-center gap-1.5 font-medium text-gray-500 hover:text-gray-900 transition-colors duration-150"
             >
-              Przeglądaj usługi
+              <ArrowLeft className="w-4 h-4" />
+              Powrót
             </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="bg-white border border-[#EDEBE9]">
-                <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9] text-xs font-semibold text-[#605E5C] uppercase tracking-wide">
-                  <div className="col-span-5">Usługa</div>
-                  <div className="col-span-3 text-center">Ilość</div>
-                  <div className="col-span-3 text-right">Cena</div>
-                  <div className="col-span-1"></div>
-                </div>
+            <ChevronRight className="w-3 h-3 text-gray-300" />
+            <span className="font-medium text-gray-900">Koszyk</span>
+          </nav>
+        </div>
 
+        <div className="max-w-5xl mx-auto px-8 py-10">
+
+          <div className="mb-8" style={{ animation: 'fadeUp 0.4s ease' }}>
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+              Koszyk
+            </h1>
+            <p className="text-sm mt-1 text-gray-500">
+              {totalItems} {totalItems === 1 ? 'przedmiot' : 'przedmiotów'} w koszyku
+            </p>
+          </div>
+
+          {cart.length === 0 ? (
+            <div
+              className="py-20 text-center rounded-2xl bg-white border border-gray-200"
+              style={{ animation: 'fadeUp 0.4s ease' }}
+            >
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 bg-blue-50">
+                <ShoppingCart className="w-6 h-6 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-semibold mb-1 text-gray-900">
+                Twój koszyk jest pusty
+              </h2>
+              <p className="text-sm mb-8 text-gray-500">
+                Dodaj usługi do koszyka, aby kontynuować
+              </p>
+              <button
+                onClick={goBack}
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:-translate-y-px"
+              >
+                Przeglądaj usługi
+              </button>
+            </div>
+          ) : (
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+              <div className="lg:col-span-2 flex flex-col gap-3">
                 {cart.map((item, index) => (
                   <div
                     key={item.serviceId}
-                    className={`${index !== cart.length - 1 ? 'border-b border-[#EDEBE9]' : ''}`}
+                    className="rounded-2xl bg-white border border-gray-200 transition-all duration-200 hover:border-blue-200 hover:shadow-[0_2px_12px_rgba(37,99,235,0.06)]"
+                    style={{
+                      animation: removingId === item.serviceId
+                        ? 'fadeOut 0.28s ease forwards'
+                        : `fadeUp 0.4s ease ${index * 0.06}s both`,
+                    }}
                   >
-                    <div className="grid grid-cols-12 gap-4 px-4 py-4 items-center">
-                      <div className="col-span-5">
-                        <h3 className="text-sm font-medium text-[#323130]">{item.name}</h3>
-                        <p className="text-xs text-[#605E5C] mt-0.5">
-                          {formatPrice(item.price)} / szt.
-                        </p>
-                      </div>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-gray-900 truncate">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs mt-0.5 text-gray-400">
+                            {formatPrice(item.price)} / szt.
+                          </p>
+                        </div>
 
-                      <div className="col-span-3 flex justify-center">
-                        <div className="inline-flex items-center border border-[#8A8886] rounded-sm">
+                        <div className="flex items-center rounded-lg overflow-hidden border border-blue-200 bg-blue-50/40">
                           <button
                             onClick={() => updateQuantity(item.serviceId, item.quantity - 1, user?.id)}
-                            className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
+                            className="p-2 text-blue-600/70 hover:text-blue-700 hover:bg-blue-100 transition-colors duration-100"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-3.5 h-3.5" />
                           </button>
-                              <input
-                              type="number"
-                              value={inputValue[item.serviceId] ?? item.quantity}
-                              min={1}
-                              onChange={(e) => {
-                                setInputValue((prev) => ({ ...prev, [item.serviceId]: e.target.value }));
-                                const val = parseInt(e.target.value, 10);
-                                if (!isNaN(val) && val > 0) {
-                                  updateQuantity(item.serviceId, val, user?.id);
-                                }
-                              }}
-                              onBlur={() => {
-                                const raw = inputValue[item.serviceId];
-                                const val = parseInt(raw, 10);
-                                if (!raw || isNaN(val) || val < 1) {
-                                  updateQuantity(item.serviceId, 1, user?.id);
-                                }
-                                setInputValue((prev) => {
-                                  const next = { ...prev };
-                                  delete next[item.serviceId];
-                                  return next;
-                                });
-                              }}
-                              className="w-10 text-center text-sm text-[#323130] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
+                          <input
+                            type="number"
+                            value={inputValue[item.serviceId] ?? item.quantity}
+                            min={1}
+                            onChange={(e) => {
+                              setInputValue((prev) => ({ ...prev, [item.serviceId]: e.target.value }));
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val) && val > 0) updateQuantity(item.serviceId, val, user?.id);
+                            }}
+                            onBlur={() => {
+                              const raw = inputValue[item.serviceId];
+                              const val = parseInt(raw, 10);
+                              if (!raw || isNaN(val) || val < 1) updateQuantity(item.serviceId, 1, user?.id);
+                              setInputValue((prev) => { const next = { ...prev }; delete next[item.serviceId]; return next; });
+                            }}
+                            className="w-10 text-center text-sm font-semibold text-blue-700 bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
                           <button
                             onClick={() => updateQuantity(item.serviceId, item.quantity + 1, user?.id)}
-                            className="p-1.5 text-[#605E5C] hover:bg-[#F3F2F1] transition-colors"
+                            className="p-2 text-blue-600/70 hover:text-blue-700 hover:bg-blue-100 transition-colors duration-100"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                      </div>
 
-                      <div className="col-span-3 text-right">
-                        <span className="text-sm font-semibold text-[#323130]">
-                          {formatPrice(item.price * item.quantity)}
-                        </span>
-                      </div>
+                        <div className="text-right min-w-[90px]">
+                          <span className="text-sm font-semibold text-gray-900">
+                            {formatPrice(item.price * item.quantity)}
+                          </span>
+                        </div>
 
-                      <div className="col-span-1 text-right">
                         <button
-                          onClick={() => removeFromCart(item.serviceId, user?.id)}
-                          className="p-1.5 text-[#A19F9D] hover:text-[#A4262C] hover:bg-[#FDE7E9] rounded-sm transition-colors"
+                          onClick={() => handleRemove(item.serviceId, user?.id)}
+                          className="p-2 rounded-lg text-gray-300 hover:text-red-600 hover:bg-red-50 transition-all duration-150"
                           title="Usuń z koszyka"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                    </div>
 
-                    <div className="px-4 pb-4">
-                      <label
-                        htmlFor={`note-${item.serviceId}`}
-                        className="block text-xs font-semibold text-[#323130] mb-1"
-                      >
-                        Notatka
-                      </label>
-                      <textarea
-                        id={`note-${item.serviceId}`}
-                        value={item.note || ''}
-                        onChange={(e) => updateNote(item.serviceId, e.target.value, user?.id)}
-                        placeholder="Dodaj szczególne wymagania lub uwagi..."
-                        rows={2}
-                        className="w-full px-3 py-2 text-sm text-[#323130] bg-white border border-[#8A8886] rounded-sm placeholder:text-[#A19F9D] focus:outline-none focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] resize-none"
-                      />
+                      <div className="mt-4">
+                        <label
+                          htmlFor={`note-${item.serviceId}`}
+                          className="block text-xs font-medium mb-1.5 text-gray-500"
+                        >
+                          Notatka
+                        </label>
+                        <textarea
+                          id={`note-${item.serviceId}`}
+                          value={item.note || ''}
+                          onChange={(e) => updateNote(item.serviceId, e.target.value, user?.id)}
+                          placeholder="Dodaj szczególne wymagania lub uwagi..."
+                          rows={2}
+                          className="w-full px-3.5 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg resize-none transition-all duration-150 placeholder:text-gray-400 focus:outline-none focus:border-blue-600 focus:ring-[3px] focus:ring-blue-600/10 focus:bg-white"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
 
-            <div className="lg:col-span-1">
-              <div className="bg-white border border-[#EDEBE9] sticky top-6">
-                <div className="px-4 py-3 bg-[#F3F2F1] border-b border-[#EDEBE9]">
-                  <h3 className="text-xs font-semibold text-[#323130] uppercase tracking-wide">
-                    Podsumowanie
-                  </h3>
-                </div>
+              <div className="lg:col-span-1">
+                <div
+                  className="rounded-2xl overflow-hidden sticky top-8 bg-white border border-gray-200"
+                  style={{ animation: 'fadeUp 0.4s ease 0.15s both' }}
+                >
+                  <div className="h-1 bg-blue-600" />
 
-                <div className="p-4 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-[#605E5C]">Netto</span>
-                    <span className="text-sm text-[#323130]">{formatPrice(net)}</span>
+                  <div className="px-5 py-4 border-b border-gray-200">
+                    <h3 className="text-xs font-semibold uppercase tracking-widest text-blue-600">
+                      Podsumowanie
+                    </h3>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-[#605E5C]">VAT (23%)</span>
-                    <span className="text-sm text-[#323130]">{formatPrice(vat)}</span>
-                  </div>
-                  <div className="border-t border-[#EDEBE9] pt-3">
+
+                  <div className="p-5 space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold text-[#323130]">Razem</span>
-                      <span className="text-lg font-semibold text-[#323130]">{formatPrice(gross)}</span>
+                      <span className="text-sm text-gray-500">Netto</span>
+                      <span className="text-sm font-medium text-gray-900">{formatPrice(net)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">VAT (23%)</span>
+                      <span className="text-sm font-medium text-gray-900">{formatPrice(vat)}</span>
+                    </div>
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-semibold text-gray-900">Razem</span>
+                        <span className="text-xl font-bold tracking-tight text-gray-900">
+                          {formatPrice(gross)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="p-4 border-t border-[#EDEBE9]">
-                  <button
-                    onClick={handleCheckout}
-                    className="w-full py-2.5 bg-[#107C10] hover:bg-[#0E6A0E] text-white text-sm font-semibold rounded-sm transition-colors focus:outline-none focus:ring-1 focus:ring-[#107C10] focus:ring-offset-1"
-                  >
-                    Przejdź do płatności
-                  </button>
-                  <p className="text-xs text-[#605E5C] text-center mt-3">
-                    Bezpieczna płatność · Faktura VAT
-                  </p>
+                  <div className="px-5 pb-5">
+                    <button
+                      onClick={handleCheckout}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(37,99,235,0.3)]"
+                    >
+                      Przejdź do płatności
+                    </button>
+                    <p className="text-xs text-center mt-3 text-gray-400">
+                      Bezpieczna płatność · Faktura VAT
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
