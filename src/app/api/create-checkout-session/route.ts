@@ -62,6 +62,11 @@ export async function POST(request: NextRequest) {
       metadata: {
         orderId,
       },
+      billing_address_collection: 'required',
+      customer_update: { address: 'auto'},
+      automatic_tax: {
+        enabled: true,
+      },
       invoice_creation: {
         enabled: true,
       },

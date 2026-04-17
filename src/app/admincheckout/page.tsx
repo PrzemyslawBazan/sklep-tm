@@ -30,12 +30,12 @@ export default function CheckoutPage() {
   }, [cart.length, isHydrated, router]);
 
   
-  const handleCustomerSelect = ( stripeCustomerId : string | null ) => {
+  const handleCustomerSelectAdmin = ( stripeCustomerId : string | null ) => {
      setSelectedStripeCustomerId(stripeCustomerId ); 
-     console.log ('Selected Stripe Customer ID:', stripeCustomerId); 
+     console.log ('ADMIN: Selected Stripe Customer ID:', stripeCustomerId); 
     };
 
-  const handleCheckout = async (customer: Customer) => {
+  const handleCheckoutAdmin = async (customer: Customer) => {
     if (!user?.id) {
       alert('Musisz być zalogowany aby złożyć zamówienie');
       return;
@@ -54,7 +54,6 @@ export default function CheckoutPage() {
         })
         .select()
         .single();
-
       if (addressError) throw addressError;
 
       // Check if customer already exists
@@ -122,13 +121,15 @@ export default function CheckoutPage() {
 
       // Call API to create Stripe session
       // The API will create a Stripe customer if customerStripeId is null
+      console.log("TESTING..")
+      console.log(selectedStripeCustomerId);
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderId: orderData.id,
           customerId: finalCustomerData.id,
-          customerStripeId: finalCustomerData.stripe_customer_id || null,
+          customerStripeId: finalCustomerData.stripe_customer_id || selectedStripeCustomerId,
           items: cart,
           userInfo: {
             userId: user.id,
@@ -229,11 +230,11 @@ export default function CheckoutPage() {
           )}
         </div>
         <CheckoutForm 
-          onSubmit={handleCheckout} 
+          onSubmit={handleCheckoutAdmin} 
           loading={loading} 
           initialData={savedCustomerData}
           path={pathName}
-          onCustomerSelect={handleCustomerSelect}
+          onCustomerSelect={handleCustomerSelectAdmin}
         />
       </div>
 

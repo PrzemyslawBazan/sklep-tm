@@ -173,7 +173,7 @@ export default function Home() {
 
    <main className="bg-custom-beige">
   <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-4 md:py-12 py-6">
-
+  
   {(() => {
     const categoryNames: Record<string, string> = {
       accounting: 'Usługi księgowe',
@@ -182,7 +182,7 @@ export default function Home() {
       immigration: 'Usługi imigracyjne',
       tax: 'Doradztwo podatkowe'
     };
-
+  
     // Filter services by search query
     const searchFilteredServices = services.filter((service) => {
       if (!searchQuery.trim()) return true;
@@ -254,7 +254,7 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-
+                  
                   {categoryServices.length > 4 && (
                     <button
                       onClick={() => scroll(category, 'right')}

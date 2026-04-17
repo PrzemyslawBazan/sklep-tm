@@ -72,7 +72,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
     setLoadingCustomers(true);
     try {
       const response = await fetch('/api/stripe/customers');
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log('Customers list:', data);
@@ -89,7 +89,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
 
   const handleCustomerSelect = async (customerId: string) => {
     setSelectedCustomerId(customerId);
-    
+    console.log(customerId)
     if (onCustomerSelect) {
       onCustomerSelect(customerId || null);
     }
@@ -115,10 +115,9 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
       });
       return;
     }
-
+    console.log("TESTTEST")
     try {
       const response = await fetch(`/api/stripe/customers/${customerId}`);
-      
       if (response.ok) {
         const data = await response.json();
         const customer = data.customer;
@@ -142,6 +141,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
             country: customer.address?.country || 'PL',
           },
         });
+
         setIsCompanyDataLocked(true);
       } else {
         console.error('Failed to fetch customer:', response.status);
@@ -287,7 +287,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
                 ))}
               {stripeCustomers.filter((c) => {
                 const q = customerSearch.toLowerCase();
-                return (c.name || "").toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+                return (c.name || "").toLowerCase().includes(q) || (c.email || "").toLowerCase().includes(q);
               }).length === 0 && (
                 <p className="text-xs text-stone-300 text-center py-4">Brak wyników</p>
               )}

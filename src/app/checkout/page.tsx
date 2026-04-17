@@ -182,12 +182,13 @@ export default function CheckoutPage() {
 
       // Call API to create Stripe session
       // The API will create a Stripe customer if customerStripeId is null
+      console.log(selectedStripeCustomerId)
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderId: orderData.id,
-          customerId: finalCustomerData.id,
+          customerId: finalCustomerData.id || selectedStripeCustomerId,
           customerStripeId: finalCustomerData.stripe_customer_id || null,
           items: cart,
           userInfo: {

@@ -24,7 +24,7 @@ export async function GET(
         { status: 404 }
       );
     }
-    
+    console.log("ROUTE2")
     return NextResponse.json({
       customer: {
         id: customer.id,
@@ -35,7 +35,8 @@ export async function GET(
         phone: customer.phone,
         created: customer.created,
         description: customer.description,
-        nip: vat_number
+        nip: vat_number,
+        customerId: customerId
       },
     });
   } catch (error: any) {

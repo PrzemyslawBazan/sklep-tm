@@ -12,16 +12,26 @@ export async function POST(request: NextRequest) {
   console.log('Processing session:', sessionId);
   
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId); 
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ['discounts.promotion_code']
+    }); 
+    console.log(session.automatic_tax);
+    const tax = (session.total_details?.amount_tax ?? 0) / 100 
+    console.log(tax)
     let codeString;
+    let precentageOff;
     if (session.discounts?.[0]) {
-        const discount = session.discounts[0];
 
+        const discount = session.discounts[0];
+        precentageOff = typeof discount.promotion_code !== "string"
+  ? discount.promotion_code?.coupon?.percent_off
+  : undefined;
+      console.log(discount)
       if (typeof discount.promotion_code === "string") {
         codeString = discount.promotion_code;
       } else { 
         codeString = discount.promotion_code?.code;
-      }
+     }
     }
     if (session.payment_status === 'paid') {
       const { orderId, customerId } = session.metadata!;
@@ -38,7 +48,9 @@ export async function POST(request: NextRequest) {
           stripe_customer_id: session.customer as string,
           status: 'completed',
           paid_at: paid_at,
-          coupon: codeString
+          coupon: codeString,
+          precent: precentageOff,
+          vat_included: tax
         })
         .eq('id', orderId)
         .select()
