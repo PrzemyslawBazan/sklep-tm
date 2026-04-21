@@ -61,8 +61,13 @@ export default function OverviewFields({
         return;
     }
 
-    const created: UdCode = JSON.parse(text);
+        const created: UdCode = JSON.parse(text);
         onUdCodeAdded(created);
+        const syntheticEvent = {
+        target: { name: 'ud_code', value: String(created.id) },
+        } as React.ChangeEvent<HTMLSelectElement>;
+        onInputChange(syntheticEvent);
+
         setNewUdCodeName('');
         setIsAddingUdCode(false);
     };

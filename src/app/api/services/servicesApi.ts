@@ -71,7 +71,7 @@ export const updateService = async (serviceId: string, serviceData: {
   overview_points: string[];
   steps: string[];
   requirements: string[];
-  ud_code: number | null;
+  ud_code: string | number | null;
   start_time: string | number | null;
   finish_time: string | number | null;
   image_url: string | null;
@@ -99,7 +99,9 @@ export const updateService = async (serviceId: string, serviceData: {
       overview_points: serviceData.overview_points,
       steps: serviceData.steps,
       requirements: serviceData.requirements,
-      ud_code: serviceData.ud_code,
+      ud_code: serviceData.ud_code === '' || serviceData.ud_code == null
+  ? null
+  : Number(serviceData.ud_code),
       start_time: serviceData.start_time,
       finish_time: serviceData.finish_time,
       image_url: serviceData.image_url
@@ -118,7 +120,6 @@ export const updateService = async (serviceId: string, serviceData: {
     }
 
     console.log(' Service updated successfully:', data);
-
     const updatedService: Service = {
       id: data.id,
       name: data.name,
@@ -136,11 +137,12 @@ export const updateService = async (serviceId: string, serviceData: {
       overview_points: data.overview_points,
       steps: data.steps,
       requirements: data.requirements,
-      ud_code: data.ud_code,
+      ud_code: serviceData.ud_code === '' || serviceData.ud_code == null ? null : Number(serviceData.ud_code),
       start_time: data.start_time,
       finish_time: data.finish_time,
       image_url: data.image_url
     };
+    console.log(serviceData.ud_code)
 
     return { success: true, data: updatedService };
   } catch (error) {
