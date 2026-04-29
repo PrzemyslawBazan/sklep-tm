@@ -105,54 +105,84 @@ export default function Home() {
 
      }}>
 
-   <div className="absolute inset-0 flex flex-col">
-  <div className="absolute top-8 left-0 md:top-8 top-4">
-  <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-2">
-    <h1 className="md:text-2xl md:text-3xl text-xl font-bold text-white md:ml-0 ml-2">
-      Sklep z usługami
-    </h1>
+   <div className="absolute inset-0 overflow-hidden bg-custom-beige">
+  <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-blue-100" />
+  <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
+  <div className="absolute bottom-0 -left-24 h-80 w-80 rounded-full bg-blue-300/40 blur-3xl" />
+
+  <div className="relative z-10 flex h-full flex-col">
+    <div className="pt-6 sm:pt-8 lg:pt-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="inline-flex items-center rounded-full border border-blue-100 bg-white/80 px-3 py-1 text-xs font-medium text-blue-700 shadow-sm backdrop-blur-md">
+          Premium marketplace
+        </div>
+
+        <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900">
+          Sklep z usługami
+        </h1>
+
+        <p className="mt-3 max-w-xl text-sm sm:text-base leading-6 text-slate-600">
+          Nowoczesne miejsce do szybkiego wyszukiwania i zamawiania usług.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-3xl">
+        <div className="rounded-3xl border border-white/80 bg-white/85 p-1.5 shadow-[0_18px_50px_rgba(37,99,235,0.10)] backdrop-blur-xl">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Szukaj usług..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setActiveCategory("all");
+              }}
+              className="h-12 sm:h-13 w-full rounded-[1.35rem] bg-transparent pl-5 pr-14 text-sm sm:text-base text-slate-800 placeholder-slate-400 outline-none"
+            />
+
+            <button className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg active:scale-95">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="pb-5 sm:pb-7 lg:pb-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
+          {categories.map((category) => (
+            <button
+              key={category.key}
+              onClick={() => setActiveCategory(category.key)}
+              className={`shrink-0 rounded-2xl px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${
+                activeCategory === category.key
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                  : "bg-white/80 text-slate-700 border border-white hover:bg-white hover:text-blue-700 shadow-sm"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-  <div className="flex-1 flex items-center justify-center">
-    <div className="w-full max-w-2xl md:px-4 px-2">
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Szukaj usług"
-          value={searchQuery}
-          onChange={(e) => {setSearchQuery(e.target.value); setActiveCategory("all");}}
-          className="w-full md:px-6 px-4 md:py-3 py-2 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 md:text-base text-sm"
-        />
-        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-          <svg className="md:w-5 md:h-5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div className="md:pb-8 pb-4">
-    <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-2">
-      <div className="flex md:justify-between justify-start md:gap-0 gap-2 items-center overflow-x-auto md:overflow-visible">
-        {categories.map((category) => (
-          <button
-            key={category.key}
-            onClick={() => setActiveCategory(category.key)}
-            className={`md:text-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap md:px-0 px-2 ${
-              activeCategory === category.key
-                ? 'text-blue-300 border-b-2 border-blue-300 pb-1'
-                : 'text-white hover:text-blue-200'
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-</div>  
       </div>
 
 

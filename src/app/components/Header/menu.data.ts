@@ -18,6 +18,10 @@ export const navBarPath: INavItem[] = [
         name: "Kontakt",
         url: PageConfig.CONTACT
     },
+    {
+        name: "Sklep z usługami",
+        url: PageConfig.STORE_LINK
+    }
 ]
 
 export const navBarAdmin: INavItem[] = [

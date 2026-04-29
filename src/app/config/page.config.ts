@@ -6,7 +6,7 @@ class PageConfig {
     CONTACT = 'https://taxm.pl/kontakt/'
     ABOUT = '/about'
     CONSULTING = '/consulting'
-
+    STORE_LINK = '/'
     ADMIN = '/admin'
 }
 

@@ -77,7 +77,6 @@ export default function CheckoutPage() {
     fetchSavedData();
   }, [user]);
 
-  // Redirect if cart is empty after hydration
   useEffect(() => {
     if (isHydrated && cart.length === 0) {
       router.push('/');
