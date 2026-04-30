@@ -185,8 +185,7 @@ export default function Home() {
 </div>
       </div>
 
-
-      <div className="bg-gray-100 md:py-6 py-3">
+         <div className="bg-gray-100 md:py-6 py-3">
         <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-2">
           <div className="flex flex-col md:flex-row items-center justify-between md:gap-6 gap-3">
             <div className="flex-1">
@@ -200,6 +199,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+     
 
    <main className="bg-custom-beige">
   <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-4 md:py-12 py-6">
@@ -244,68 +244,96 @@ export default function Home() {
     return (
       <>
         {Object.keys(groupedServices).length > 0 ? (
-          Object.entries(groupedServices).map(([category, categoryServices]) => (
-            <section key={category} className="md:mb-12 mb-6">
-              <div className="flex items-center justify-between md:mb-6 mb-4">
-                <h2 className="md:text-2xl text-lg font-bold text-gray-900">
-                  {categoryNames[category] || category}
-                </h2>
+  Object.entries(groupedServices).map(([category, categoryServices]) => (
+    <section key={category} className="mb-8 md:mb-12">
+      <div className="mb-4 md:mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-slate-900">
+            {categoryNames[category] || category}
+          </h2>
+          <div className="mt-2 h-[2px] w-12 bg-blue-600 rounded-full" />
+        </div>
+      </div>
+
+      <div className="group relative">
+        <div className="relative md:-mx-3 md:px-3">
+          {categoryServices.length > 4 && (
+            <button
+              onClick={() => scroll(category, "left")}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-11 w-11 items-center justify-center border border-slate-200 bg-white/95 text-slate-700 shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white hover:shadow-lg"
+              aria-label="Scroll left"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          )}
+
+          <div
+            ref={(el) => {
+              scrollRefs.current[category] = el;
+            }}
+            className="flex flex-col gap-3 md:flex-row md:gap-4 md:overflow-x-auto overflow-visible md:pb-3 md:snap-x md:snap-mandatory"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {categoryServices.map((service) => (
+              <div
+                key={service.id}
+                className="w-full md:w-auto md:min-w-[320px] md:max-w-[320px] md:snap-start"
+              >
+                <ServiceCard
+                  service={service}
+                  onAddToCart={addToCart}
+                />
               </div>
+            ))}
+          </div>
 
-              <div className="relative group">
-                <div className="relative md:-mx-4 md:px-4 -mx-2 px-2">
-                  {categoryServices.length > 4 && (
-                    <button
-                      onClick={() => scroll(category, 'left')}
-                      className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 transition-all duration-200 opacity-0 group-hover:opacity-100"
-                      aria-label="Scroll left"
-                    >
-                      <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                  )}
+          {categoryServices.length > 4 && (
+            <button
+              onClick={() => scroll(category, "right")}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-11 w-11 items-center justify-center border border-slate-200 bg-white/95 text-slate-700 shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white hover:shadow-lg"
+              aria-label="Scroll right"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
 
-                  <div 
-                    ref={(el) => { scrollRefs.current[category] = el; }}
-                    className="flex md:flex-row flex-col md:gap-4 gap-3 md:overflow-x-auto overflow-visible md:pb-4 pb-0 md:snap-x snap-none md:snap-mandatory"
-                    style={{
-                      scrollbarWidth: 'none',
-                      msOverflowStyle: 'none',
-                      WebkitOverflowScrolling: 'touch'
-                    }}
-                  >
-                    {categoryServices.map((service) => (
-                      <div key={service.id} className="md:snap-start w-full md:w-auto">
-                        <ServiceCard
-                          service={service}
-                          onAddToCart={addToCart}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {categoryServices.length > 4 && (
-                    <button
-                      onClick={() => scroll(category, 'right')}
-                      className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 transition-all duration-200 opacity-0 group-hover:opacity-100"
-                      aria-label="Scroll right"
-                    >
-                      <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-            </section>
-          ))
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+    </section>
+  ))
         ) : (
           <div className="flex flex-col items-center justify-center md:py-16 py-8 text-center">
             <div className="mb-4 inline-flex md:h-12 md:w-12 h-10 w-10 items-center justify-center rounded-full bg-gray-100">

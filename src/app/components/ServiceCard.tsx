@@ -38,46 +38,52 @@ export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) 
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={handleCardClick}
-      onKeyDown={handleKeyDown}
-      className="relative flex-shrink-0 w-full md:w-[300px] cursor-pointer rounded-2xl bg-gray-100 overflow-hidden transition-all duration-200 hover:shadow-lg"
-      aria-label={`Zobacz szczegóły usługi ${service.name}`}
-    >
-      
-    <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
-        <Image 
-          src={ServiceImage}
-          alt={service.description}
-          width={280}
-          height={192}
-          className="w-full h-full object-cover"
+  role="button"
+  tabIndex={0}
+  onClick={handleCardClick}
+  onKeyDown={handleKeyDown}
+  className="relative flex-shrink-0 w-full md:w-[300px] cursor-pointer overflow-hidden border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+  aria-label={`Zobacz szczegóły usługi ${service.name}`}
+>
+  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-50 to-slate-100">
+    <Image
+      src={ServiceImage}
+      alt={service.description}
+      width={280}
+      height={192}
+      className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+    />
+
+    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent" />
+  </div>
+
+  <div className="bg-custom-beige p-4">
+    <h3 className="min-h-[48px] line-clamp-2 text-base font-semibold leading-6 text-slate-900">
+      {service.name}
+    </h3>
+
+    <p className="mt-2 min-h-[40px] line-clamp-2 text-sm leading-5 text-slate-600">
+      {service.description}
+    </p>
+
+    <div className="mt-5 flex items-end justify-between gap-4">
+      <div>
+        <p className="text-2xl font-semibold tracking-tight text-slate-900 whitespace-nowrap">
+          {formatPrice(service.price)} zł
+        </p>
+        <p className="text-xs font-medium text-slate-500 mt-0.5">
+          + VAT
+        </p>
+      </div>
+
+      <div className="shrink-0">
+        <AddToCartButton
+          onClick={handleAddToCart}
+          ariaLabel={`Dodaj usługę ${service.name} do koszyka`}
         />
       </div>
-
-      <div className="p-4 bg-custom-beige">
-        <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[48px]">
-          {service.name}
-        </h3>
-        
-        <p className="text-xs text-gray-600 mb-4 line-clamp-2 min-h-[32px]">
-          {service.description}
-        </p>
-
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xl font-bold text-gray-900 whitespace-nowrap">
-              {formatPrice(service.price)} zł <span className="text-sm font-normal text-gray-600">+ VAT</span>
-            </p>
-          </div>
-          
-          <AddToCartButton
-              onClick={handleAddToCart}
-            ariaLabel={`Dodaj usługę ${service.name} do koszyka`}
-            />
-        </div>
-      </div>
     </div>
+  </div>
+</div>
   );
 }
