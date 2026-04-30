@@ -122,7 +122,7 @@ export default function Home() {
         </h1>
 
         <p className="mt-3 max-w-xl text-sm sm:text-base leading-6 text-slate-600">
-          Nowoczesne miejsce do szybkiego wyszukiwania i zamawiania usług.
+          Miejsce do szybkiego wyszukiwania i zamawiania usług w Tax&Money.
         </p>
       </div>
     </div>
@@ -163,24 +163,46 @@ export default function Home() {
     </div>
 
     <div className="pb-5 sm:pb-7 lg:pb-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
-          {categories.map((category) => (
-            <button
-              key={category.key}
-              onClick={() => setActiveCategory(category.key)}
-              className={`shrink-0 rounded-2xl px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${
-                activeCategory === category.key
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "bg-white/80 text-slate-700 border border-white hover:bg-white hover:text-blue-700 shadow-sm"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </div>
+  <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
+      {categories.map((category) => (
+        <button
+          key={category.key}
+          onClick={() => setActiveCategory(category.key)}
+          className={`shrink-0 rounded-2xl px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${
+            activeCategory === category.key
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+              : "bg-white/80 text-slate-700 border border-white hover:bg-white hover:text-blue-700 shadow-sm"
+          }`}
+        >
+          {category.name}
+        </button>
+      ))}
+
+      {activeCategory !== "all" && (
+        <button
+          onClick={() => setActiveCategory("all")}
+          className="shrink-0 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:bg-white hover:text-blue-700 hover:shadow-md active:scale-[0.98]"
+        >
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          Wyczyść filtry
+        </button>
+      )}
     </div>
+  </div>
+</div>
   </div>
 </div>
       </div>
