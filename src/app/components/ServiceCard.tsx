@@ -47,7 +47,7 @@ export default function ServiceCard({ service, onAddToCart }: ServiceCardProps) 
 >
   <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-50 to-slate-100">
     <Image
-      src={ServiceImage}
+      src={service.image_url || ServiceImage}
       alt={service.description}
       width={280}
       height={192}

@@ -127,10 +127,6 @@ export default function ServiceDetailPage() {
               Strona główna
             </button>
             <span className="mx-1">/</span>
-            <button onClick={() => router.push('/')} className="hover:text-gray-800">
-              Usługi i rozwiązania
-            </button>
-            <span className="mx-1">/</span>
             <span className="text-gray-800">{service.category}</span>
           </div>
         </div>
@@ -138,9 +134,12 @@ export default function ServiceDetailPage() {
           <div className="flex">
             <div className="w-80 h-64 flex-shrink-0">
                 <Image
-                    src={serviceImage}
+                    src={service.image_url || serviceImage }
                     alt='service image'
                     className="object-contain"
+                    width={350}
+                    height={350}
+                    unoptimized
                     priority
                 />
             </div>
