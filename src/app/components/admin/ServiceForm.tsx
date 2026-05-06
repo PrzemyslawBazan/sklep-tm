@@ -114,7 +114,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
             }
 
             const { data } = supabase.storage
-                .from('service-images')
+                .from('service_images')
                 .getPublicUrl(fileName);
 
             setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
