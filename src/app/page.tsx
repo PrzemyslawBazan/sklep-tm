@@ -264,21 +264,39 @@ export default function Home() {
 </div>
       </div>
 
-         <div className="bg-gray-100 md:py-6 py-3">
-        <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-2">
-          <div className="flex flex-col md:flex-row items-center justify-between md:gap-6 gap-3">
-            <div className="flex-1">
-              <p className="md:text-lg text-sm text-gray-700 font-medium md:text-left text-center">
-                Jako stały klient Tax&Money zyskujesz rabat 20% na wszystkie nasze usługi
-              </p>
-            </div>
-            <button className="bg-blue-600 text-white md:px-8 px-4 md:py-3 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors whitespace-nowrap md:text-base text-sm" >
-              <a href='https://taxm.pl/'>Zleć księgowość i zdobądź rabaty!</a>
-            </button>
-          </div>
-        </div>
+         <div className="py-4 md:py-6">
+  <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+
+    <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-1 md:px-2">
+
+      {/* LEFT */}
+      <div className="relative pl-4 md:pl-5">
+        {/* subtle accent line */}
+        <span className="absolute left-0 top-1/2 h-8 w-[2px] -translate-y-1/2 bg-blue-600 rounded-full" />
+
+        <p className="text-sm md:text-base text-slate-700 font-medium">
+          Jako stały klient Tax&Money zyskujesz{" "}
+          <span className="text-blue-600 font-semibold">20% rabatu</span>{" "}
+          na wszystkie nasze usługi
+        </p>
+
+        <p className="text-xs md:text-sm text-slate-500 mt-1">
+          Automatycznie aktywowany dla klientów premium
+        </p>
       </div>
-     
+
+      {/* RIGHT CTA */}
+      <a
+        href="https://taxm.pl/"
+        className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 active:scale-95 whitespace-nowrap"
+      >
+        Zleć księgowość i zdobądź rabaty
+      </a>
+
+    </div>
+
+  </div>
+</div>
 
    <main className="bg-custom-beige">
   <div className="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 px-4 md:py-12 py-6">
