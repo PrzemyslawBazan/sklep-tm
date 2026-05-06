@@ -4,6 +4,9 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ServiceCard from './components/ServiceCard';
 import { useServices } from './hooks/useServices';
+import { Button } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { useCartActions, useIsCartHydrated, useTotalItems } from '../app/contexts/CartContext';
 
 export default function Home() {
@@ -111,99 +114,153 @@ export default function Home() {
   <div className="absolute bottom-0 -left-24 h-80 w-80 rounded-full bg-blue-300/40 blur-3xl" />
 
   <div className="relative z-10 flex h-full flex-col">
-    <div className="pt-6 sm:pt-8 lg:pt-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="inline-flex items-center rounded-full border border-blue-100 bg-white/80 px-3 py-1 text-xs font-medium text-blue-700 shadow-sm backdrop-blur-md">
-          Premium marketplace
+  <div className="pt-6 sm:pt-8 lg:pt-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-medium text-blue-700 shadow-sm backdrop-blur-md">
+        Premium marketplace
+      </div>
+
+      <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900">
+        Sklep z usługami
+      </h1>
+
+      <p className="mt-3 max-w-xl text-sm sm:text-base leading-6 text-slate-600">
+        Miejsce do szybkiego wyszukiwania i zamawiania usług w Tax&Money.
+      </p>
+    </div>
+  </div>
+
+  <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
+    <div className="w-full max-w-3xl">
+      <div className="rounded-3xl border border-white/70 bg-white/70 p-1.5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Szukaj usług..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setActiveCategory("all");
+            }}
+            className="h-12 sm:h-13 w-full rounded-[1.35rem] bg-transparent pl-5 pr-14 text-sm sm:text-base text-slate-800 placeholder-slate-400 outline-none"
+          />
+
+          <button className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg active:scale-95">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
         </div>
-
-        <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900">
-          Sklep z usługami
-        </h1>
-
-        <p className="mt-3 max-w-xl text-sm sm:text-base leading-6 text-slate-600">
-          Miejsce do szybkiego wyszukiwania i zamawiania usług w Tax&Money.
-        </p>
       </div>
     </div>
+  </div>
 
-    <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
-      <div className="w-full max-w-3xl">
-        <div className="rounded-3xl border border-white/80 bg-white/85 p-1.5 shadow-[0_18px_50px_rgba(37,99,235,0.10)] backdrop-blur-xl">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Szukaj usług..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setActiveCategory("all");
+  <div className="pb-5 sm:pb-7 lg:pb-10">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
+        {categories.map((category) => {
+          const isActive = activeCategory === category.key;
+
+          return (
+            <Button
+              key={category.key}
+              onClick={() => setActiveCategory(category.key)}
+              disableElevation
+              sx={{
+                flexShrink: 0,
+                borderRadius: "14px",
+                px: { xs: 2.5, sm: 3 },
+                py: 1,
+                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                fontWeight: 500,
+                textTransform: "none",
+                letterSpacing: "0.01em",
+                backdropFilter: "blur(10px)",
+                transition: "all 0.2s ease",
+                border: "1px solid rgba(255,255,255,0.7)",
+
+                ...(isActive
+                  ? {
+                      background: "rgba(37, 99, 235, 0.08)",
+                      color: "#1d4ed8",
+                      borderColor: "rgba(37, 99, 235, 0.25)",
+                      boxShadow: "0 4px 12px rgba(37,99,235,0.12)",
+                    }
+                  : {
+                      background: "rgba(255,255,255,0.6)",
+                      color: "#475569",
+                      boxShadow: "0 2px 6px rgba(15,23,42,0.05)",
+                    }),
+
+                "&:hover": {
+                  ...(isActive
+                    ? {
+                        background: "rgba(37, 99, 235, 0.12)",
+                      }
+                    : {
+                        background: "rgba(255,255,255,0.9)",
+                        color: "#0f172a",
+                        boxShadow: "0 4px 10px rgba(15,23,42,0.08)",
+                      }),
+                },
+
+                "&:active": {
+                  transform: "scale(0.97)",
+                },
               }}
-              className="h-12 sm:h-13 w-full rounded-[1.35rem] bg-transparent pl-5 pr-14 text-sm sm:text-base text-slate-800 placeholder-slate-400 outline-none"
-            />
+            >
+              {category.name}
+            </Button>
+          );
+        })}
 
-            <button className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg active:scale-95">
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        {activeCategory !== "all" && (
+          <Button
+            onClick={() => setActiveCategory("all")}
+            startIcon={<CloseIcon />}
+            disableElevation
+            sx={{
+              flexShrink: 0,
+              borderRadius: "14px",
+              px: { xs: 2.5, sm: 3 },
+              py: 1,
+              fontSize: { xs: "0.75rem", sm: "0.85rem" },
+              fontWeight: 500,
+              textTransform: "none",
+              backdropFilter: "blur(10px)",
+              border: "1px dashed rgba(148,163,184,0.4)",
+              background: "rgba(255,255,255,0.6)",
+              color: "#64748b",
+              transition: "all 0.2s ease",
 
-    <div className="pb-5 sm:pb-7 lg:pb-10">
-  <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
-      {categories.map((category) => (
-        <button
-          key={category.key}
-          onClick={() => setActiveCategory(category.key)}
-          className={`shrink-0 rounded-2xl px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 ${
-            activeCategory === category.key
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-              : "bg-white/80 text-slate-700 border border-white hover:bg-white hover:text-blue-700 shadow-sm"
-          }`}
-        >
-          {category.name}
-        </button>
-      ))}
+              "&:hover": {
+                background: "rgba(255,255,255,0.9)",
+                color: "#0f172a",
+                borderColor: "rgba(100,116,139,0.6)",
+              },
 
-      {activeCategory !== "all" && (
-        <button
-          onClick={() => setActiveCategory("all")}
-          className="shrink-0 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:bg-white hover:text-blue-700 hover:shadow-md active:scale-[0.98]"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
+              "&:active": {
+                transform: "scale(0.97)",
+              },
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          Wyczyść filtry
-        </button>
-      )}
+            Wyczyść filtry
+          </Button>
+        )}
+      </div>
     </div>
   </div>
 </div>
-  </div>
 </div>
       </div>
 
