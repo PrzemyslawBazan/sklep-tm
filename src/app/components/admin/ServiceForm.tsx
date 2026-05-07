@@ -68,7 +68,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
     });
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
+    const [error, setError] = useState<string[]>([]);
     const [udCodes, setUdCodes] = useState<{ id: number; name: string }[]>([]);
     const [formKey, setFormKey] = useState(0);
 
@@ -109,7 +109,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
 
             if (uploadError) {
                 console.error('Upload error:', uploadError);
-                setError('Failed to upload image');
+                setError(['Failed to upload image']);
                 return;
             }
 
@@ -121,7 +121,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
 
         } catch (err) {
             console.error('Unexpected upload error:', err);
-            setError('Failed to upload image');
+            setError(['Failed to upload image']);
         }
     };
 
@@ -172,22 +172,22 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
 
     const validateForm = (): boolean => {
         if (!formData.name.trim()) {
-            setError('Service name is required');
+            setError(['Service name is required']);
             return false;
         }
         if (!formData.slug.trim()) {
-            setError('URL slug is required');
+            setError(['URL slug is required']);
             return false;
         }
         if (formData.price && isNaN(parseFloat(formData.price))) {
-            setError('Price must be a valid number');
+            setError(['Price must be a valid number']);
             return false;
         }
         if (formData.vat_rate && isNaN(parseFloat(formData.vat_rate))) {
-            setError('VAT rate must be a valid number');
+            setError(['VAT rate must be a valid number']);
             return false;
         }
-        setError('');
+        setError(['']);
         return true;
     };
 
@@ -197,7 +197,7 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
         }
 
         setIsSubmitting(true);
-        setError('');
+        setError(['']);
         
         try {
             // make sure to check that the user is admin before calling it. that's for later.
@@ -234,10 +234,10 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                 });
                 setFormKey(prev => prev + 1);
             } else {
-                setError(result.error || 'Failed to create service');
+                setError([result.error || 'Failed to create service']);
             }
         } catch (error) {
-            setError('An unexpected error occurred');
+            setError(['An unexpected error occurred']);
             console.error('Error creating service:', error);
         } finally {
             setIsSubmitting(false);
@@ -305,6 +305,19 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                     onClick={handleSubmit}
                     Component='create'
                 />
+                        {error.length > 0 && (
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
+                            <p className="text-sm font-medium text-red-700">
+                                Wystąpiły błędy:
+                            </p>
+
+                            {error.map((err, idx) => (
+                                <div key={idx} className="text-sm text-red-600">
+                                    • {err}
+                                </div>
+                            ))}
+                        </div>
+                    )}
             </div>
         </div>
     );
