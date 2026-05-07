@@ -269,9 +269,7 @@ export default function Home() {
 
     <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-1 md:px-2">
 
-      {/* LEFT */}
       <div className="relative pl-4 md:pl-5">
-        {/* subtle accent line */}
         <span className="absolute left-0 top-1/2 h-8 w-[2px] -translate-y-1/2 bg-blue-600 rounded-full" />
 
         <p className="text-sm md:text-base text-slate-700 font-medium">
@@ -281,7 +279,7 @@ export default function Home() {
         </p>
 
         <p className="text-xs md:text-sm text-slate-500 mt-1">
-          Automatycznie aktywowany dla klientów premium
+          Automatycznie aktywowany dla subskrybentów
         </p>
       </div>
 
