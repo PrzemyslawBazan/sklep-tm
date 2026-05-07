@@ -24,7 +24,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
     const [formData, setFormData] = useState<ServiceData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [error, setError] = useState<string[]>([]);
     const [udCodes, setUdCodes] = useState<{ id: number; name: string }[]>([]);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
 
     const fetchService = async () => {
         setIsLoading(true);
-        setError('');
+        setError([]);
         const { data, error } = await supabase
             .from('services')
             .select('*')
@@ -84,7 +84,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 image_url: data.image_url
             });
         }
-        if (error) setError('Failed to load service');
+        if (error) setError(['Failed to load service']);
         setIsLoading(false);
     };
     fetchService();
@@ -111,7 +111,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
     const handleSubmit = async () => {
         if (!formData || !selectedServiceId) return;
         setIsSubmitting(true);
-        setError('');
+        setError(['']);
         try {
             const result = await updateService(selectedServiceId, {
                 ...formData,
@@ -121,10 +121,10 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
             if (result.success) {
                 onServiceUpdated();
             } else {
-                setError(result.error || 'Failed to update service');
+                setError([result.error || 'Failed to update service']);
             }
         } catch (err) {
-            setError('An unexpected error occurred');
+            setError(['An unexpected error occurred']);
             console.error(err);
         } finally {
             setIsSubmitting(false);
@@ -178,7 +178,19 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                     <RequirementsField formData={formData} onRequirementsChange={r => setFormData(p => p ? ({ ...p, requirements: r }) : null)} />
                     <DurationField formData={formData} onInputChange={handleInputChange} />
 
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                   {error.length > 0 && (
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
+                            <p className="text-sm font-medium text-red-700">
+                                Wystąpiły błędy:
+                            </p>
+
+                            {error.map((err, idx) => (
+                                <div key={idx} className="text-sm text-red-600">
+                                    • {err}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     <SubmitButton isSubmitting={isSubmitting} onClick={handleSubmit} Component='edit' />
                 </div>
             )}
