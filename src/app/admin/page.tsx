@@ -44,11 +44,11 @@ export default function AdminPage() {
 
     const handleServiceCreated = () => {
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
+        setTimeout(() => setShowSuccess(false), 7000);
     };
     const handleServiceUpdated = () => {
         setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
+        setTimeout(() => setShowSuccess(false), 7000);
     };
     const getNumberOfTotalServices = async () => {
         const { count, error } = await supabase
@@ -168,7 +168,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="p-6">
-                    <SuccessMessage show={showSuccess} />
+                    <SuccessMessage show={showSuccess} form={activeView}/>
 
                     <div className="mb-6">
                         <h1 className="text-xl font-semibold text-[#323130]">

@@ -120,6 +120,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
 
             if (result.success) {
                 onServiceUpdated();
+                setError([]);
             } else {
                 setError([result.error || 'Failed to update service']);
             }
@@ -159,7 +160,19 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
             {selectedServiceId && isLoading && (
                 <p className="p-6 text-gray-400 text-sm">Ładowanie usługi...</p>
             )}
+                               {error.length > 0 && (
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
+                            <p className="text-sm font-medium text-red-700">
+                                Wystąpiły błędy:
+                            </p>
 
+                            {error.map((err, idx) => (
+                                <div key={idx} className="text-sm text-red-600">
+                                {err}
+                                </div>
+                            ))}
+                        </div>
+                    )}
             {selectedServiceId && !isLoading && formData && (
                 <div className="p-6 space-y-6">
                     <BasicInfoFields formData={formData} onNameChange={handleNameChange} onInputChange={handleInputChange} />
@@ -178,19 +191,6 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                     <RequirementsField formData={formData} onRequirementsChange={r => setFormData(p => p ? ({ ...p, requirements: r }) : null)} />
                     <DurationField formData={formData} onInputChange={handleInputChange} />
 
-                   {error.length > 0 && (
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
-                            <p className="text-sm font-medium text-red-700">
-                                Wystąpiły błędy:
-                            </p>
-
-                            {error.map((err, idx) => (
-                                <div key={idx} className="text-sm text-red-600">
-                                    • {err}
-                                </div>
-                            ))}
-                        </div>
-                    )}
                     <SubmitButton isSubmitting={isSubmitting} onClick={handleSubmit} Component='edit' />
                 </div>
             )}

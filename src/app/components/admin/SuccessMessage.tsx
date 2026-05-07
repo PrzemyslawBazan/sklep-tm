@@ -1,8 +1,9 @@
 interface SuccessMessageProps {
     show: boolean;
+    form: string;
 }
 
-export default function SuccessMessage({ show }: SuccessMessageProps) {
+export default function SuccessMessage({ show, form }: SuccessMessageProps) {
     if (!show) return null;
     
     return (
@@ -15,7 +16,7 @@ export default function SuccessMessage({ show }: SuccessMessageProps) {
                 </div>
                 <div className="ml-3">
                     <p className="text-sm font-medium text-green-800">
-                        Usługa stworzona pomyślnie!
+                        { form === "create" ? "Usługa stworzona pomyślnie!" : "Usługa zaktualizowana pomyślnie!"}
                     </p>
                 </div>
             </div>
