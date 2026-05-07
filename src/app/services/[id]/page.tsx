@@ -23,6 +23,13 @@ export default function ServiceDetailPage() {
   console.log(serviceId)
   const service = services.find(s => s.id === serviceId);
   console.log(service)
+  const categories: Record<string, string> = {
+    accounting: "Księgowe" ,
+    hr: "Kadrowe",
+    legal: "Prawne",
+    immigration: "Imigracyjne",
+    tax: "Doradztwo podatkowe",
+  };
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('pl-PL', {
@@ -126,8 +133,10 @@ export default function ServiceDetailPage() {
             <button onClick={() => router.push('/')} className="hover:text-gray-800">
               Strona główna
             </button>
-            <span className="mx-1">/</span>
-            <span className="text-gray-800">{service.category}</span>
+            <button className="mx-1">/</button>
+            <button onClick={() => router.push('/')} className="text-gray-800">{categories[service.category]}</button>
+            <button onClick={() => router.push('/')} className="mx-1">/</button>
+            <button className="text-gray-800">{service.name}</button>
           </div>
         </div>
         <div className="bg-custom-beige rounded-lg shadow-sm overflow-hidden">
