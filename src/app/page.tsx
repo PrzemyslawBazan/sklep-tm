@@ -108,110 +108,148 @@ export default function Home() {
 
      }}>
 
-   <div className="absolute inset-0 overflow-hidden bg-custom-beige">
-  <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-blue-100" />
-  <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
-  <div className="absolute bottom-0 -left-24 h-80 w-80 rounded-full bg-blue-300/40 blur-3xl" />
+   <div className="absolute inset-0 overflow-hidden bg-[#FBFAF8]">
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.07),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.04),transparent_35%)]" />
 
   <div className="relative z-10 flex h-full flex-col">
-  <div className="pt-6 sm:pt-8 lg:pt-10">
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-medium text-blue-700 shadow-sm backdrop-blur-md">
-        Premium marketplace
+    <div className="pt-6 sm:pt-8 lg:pt-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="inline-flex items-center rounded-full border border-[#EAE7E2] bg-white px-3 py-1 text-[11px] font-medium tracking-[0.12em] text-slate-500 shadow-sm">
+          TAX & MONEY
+        </div>
+
+        <h1 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-slate-900 sm:text-4xl lg:text-5xl">
+          Sklep z usługami
+        </h1>
+
+        <p className="mt-3 max-w-xl text-sm leading-6 text-slate-500 sm:text-[15px]">
+          Szybkie wyszukiwanie usług księgowych, podatkowych i biznesowych.
+        </p>
       </div>
-
-      <h1 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900">
-        Sklep z usługami
-      </h1>
-
-      <p className="mt-3 max-w-xl text-sm sm:text-base leading-6 text-slate-600">
-        Miejsce do szybkiego wyszukiwania i zamawiania usług w Tax&Money.
-      </p>
     </div>
-  </div>
 
-  <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
-    <div className="w-full max-w-3xl">
-      <div className="rounded-3xl border border-white/70 bg-white/70 p-1.5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Szukaj usług..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setActiveCategory("all");
-            }}
-            className="h-12 sm:h-13 w-full rounded-[1.35rem] bg-transparent pl-5 pr-14 text-sm sm:text-base text-slate-800 placeholder-slate-400 outline-none"
-          />
+    <div className="flex flex-1 items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-3xl">
+        <div className="rounded-2xl border border-[#ECE9E4] bg-white/90 p-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.04)] backdrop-blur-sm">
+          <div className="relative flex items-center">
+            <div className="pointer-events-none absolute left-4 text-slate-400">
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-5.2-5.2m2.2-4.8a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
 
-          <button className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg active:scale-95">
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
+            <input
+              type="text"
+              placeholder="Szukaj usług..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setActiveCategory("all");
+              }}
+              className="h-11 w-full rounded-[14px] bg-transparent pl-11 pr-28 text-sm text-slate-700 placeholder:text-slate-400 outline-none"
+            />
+
+            <button className="absolute right-1.5 top-1/2 flex h-8 items-center justify-center rounded-xl bg-[#2563EB] px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-[#1D4ED8] active:scale-95 -translate-y-1/2">
+              Szukaj
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div className="pb-5 sm:pb-7 lg:pb-10">
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1">
-        {categories.map((category) => {
-          const isActive = activeCategory === category.key;
+    <div className="pb-5 sm:pb-7 lg:pb-9">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-2.5 overflow-x-auto pb-1">
+          {categories.map((category) => {
+            const isActive = activeCategory === category.key;
 
-          return (
+            return (
+              <Button
+                key={category.key}
+                onClick={() => setActiveCategory(category.key)}
+                disableElevation
+                sx={{
+                  flexShrink: 0,
+                  borderRadius: "999px",
+                  px: { xs: 2.2, sm: 2.8 },
+                  py: 0.7,
+                  minHeight: "36px",
+                  fontSize: { xs: "0.74rem", sm: "0.8rem" },
+                  fontWeight: 500,
+                  textTransform: "none",
+                  letterSpacing: "0.01em",
+                  transition: "all 0.2s ease",
+                  border: "1px solid",
+
+                  ...(isActive
+                    ? {
+                        background: "rgba(37,99,235,0.08)",
+                        color: "#1D4ED8",
+                        borderColor: "rgba(37,99,235,0.18)",
+                        boxShadow:
+                          "0 4px 12px rgba(37,99,235,0.06)",
+                      }
+                    : {
+                        background: "#FFFFFF",
+                        color: "#64748B",
+                        borderColor: "#ECE9E4",
+                      }),
+
+                  "&:hover": {
+                    ...(isActive
+                      ? {
+                          background: "rgba(37,99,235,0.12)",
+                        }
+                      : {
+                          background: "#FFFFFF",
+                          color: "#0F172A",
+                          borderColor: "#DCE5F5",
+                        }),
+                  },
+
+                  "&:active": {
+                    transform: "scale(0.97)",
+                  },
+                }}
+              >
+                {category.name}
+              </Button>
+            );
+          })}
+
+          {activeCategory !== "all" && (
             <Button
-              key={category.key}
-              onClick={() => setActiveCategory(category.key)}
+              onClick={() => setActiveCategory("all")}
+              startIcon={<CloseIcon sx={{ fontSize: 16 }} />}
               disableElevation
               sx={{
                 flexShrink: 0,
-                borderRadius: "14px",
-                px: { xs: 2.5, sm: 3 },
-                py: 1,
-                fontSize: { xs: "0.75rem", sm: "0.85rem" },
+                borderRadius: "999px",
+                px: { xs: 2.2, sm: 2.8 },
+                py: 0.7,
+                minHeight: "36px",
+                fontSize: { xs: "0.74rem", sm: "0.8rem" },
                 fontWeight: 500,
                 textTransform: "none",
-                letterSpacing: "0.01em",
-                backdropFilter: "blur(10px)",
+                border: "1px dashed #D6DCE8",
+                background: "#FFFFFF",
+                color: "#64748B",
                 transition: "all 0.2s ease",
-                border: "1px solid rgba(255,255,255,0.7)",
-
-                ...(isActive
-                  ? {
-                      background: "rgba(37, 99, 235, 0.08)",
-                      color: "#1d4ed8",
-                      borderColor: "rgba(37, 99, 235, 0.25)",
-                      boxShadow: "0 4px 12px rgba(37,99,235,0.12)",
-                    }
-                  : {
-                      background: "rgba(255,255,255,0.6)",
-                      color: "#475569",
-                      boxShadow: "0 2px 6px rgba(15,23,42,0.05)",
-                    }),
 
                 "&:hover": {
-                  ...(isActive
-                    ? {
-                        background: "rgba(37, 99, 235, 0.12)",
-                      }
-                    : {
-                        background: "rgba(255,255,255,0.9)",
-                        color: "#0f172a",
-                        boxShadow: "0 4px 10px rgba(15,23,42,0.08)",
-                      }),
+                  background: "#FFFFFF",
+                  color: "#0F172A",
+                  borderColor: "#BFD0F2",
                 },
 
                 "&:active": {
@@ -219,48 +257,13 @@ export default function Home() {
                 },
               }}
             >
-              {category.name}
+              Wyczyść
             </Button>
-          );
-        })}
-
-        {activeCategory !== "all" && (
-          <Button
-            onClick={() => setActiveCategory("all")}
-            startIcon={<CloseIcon />}
-            disableElevation
-            sx={{
-              flexShrink: 0,
-              borderRadius: "14px",
-              px: { xs: 2.5, sm: 3 },
-              py: 1,
-              fontSize: { xs: "0.75rem", sm: "0.85rem" },
-              fontWeight: 500,
-              textTransform: "none",
-              backdropFilter: "blur(10px)",
-              border: "1px dashed rgba(148,163,184,0.4)",
-              background: "rgba(255,255,255,0.6)",
-              color: "#64748b",
-              transition: "all 0.2s ease",
-
-              "&:hover": {
-                background: "rgba(255,255,255,0.9)",
-                color: "#0f172a",
-                borderColor: "rgba(100,116,139,0.6)",
-              },
-
-              "&:active": {
-                transform: "scale(0.97)",
-              },
-            }}
-          >
-            Wyczyść filtry
-          </Button>
-        )}
+          )}
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>
       </div>
 

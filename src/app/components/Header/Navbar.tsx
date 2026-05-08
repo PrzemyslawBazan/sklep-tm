@@ -149,7 +149,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         <div
           className={`
             lg:hidden overflow-hidden transition-all duration-200 ease-out
