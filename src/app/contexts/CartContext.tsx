@@ -5,28 +5,59 @@ import supabase from '../lib/supabase';
 
 const safeLocalStorage: StateStorage = {
   getItem: (key: string): string | null => {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
     try {
-      return localStorage.getItem(key);
-    } catch (e) {
-      console.warn('[CartStore] Failed to read from localStorage:', e);
+      const value = localStorage.getItem(key);
+
+      if (!value) {
+        return null;
+      }
+
+      JSON.parse(value);
+
+      return value;
+    } catch (error) {
+      console.error(
+        '[CartStore] Corrupted localStorage detected:',
+        error
+      );
+
+      localStorage.removeItem(key);
+
       return null;
     }
   },
+
   setItem: (key: string, value: string): void => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     try {
       localStorage.setItem(key, value);
-    } catch (e) {
-      console.warn('[CartStore] Failed to write to localStorage:', e);
+    } catch (error) {
+      console.error(
+        '[CartStore] Failed writing localStorage:',
+        error
+      );
     }
   },
+
   removeItem: (key: string): void => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     try {
       localStorage.removeItem(key);
-    } catch (e) {
-      console.warn('[CartStore] Failed to remove from localStorage:', e);
+    } catch (error) {
+      console.error(
+        '[CartStore] Failed removing localStorage:',
+        error
+      );
     }
   },
 };
