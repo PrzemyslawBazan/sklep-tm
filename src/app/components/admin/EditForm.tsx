@@ -163,7 +163,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                                {error.length > 0 && (
                         <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
                             <p className="text-sm font-medium text-red-700">
-                                Wystąpiły błędy:
+                                Wystąpiły błędy (jeśli nic nie jest napisane to zignoruj):
                             </p>
 
                             {error.map((err, idx) => (
