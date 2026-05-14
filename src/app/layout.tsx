@@ -4,7 +4,7 @@ import './globals.css';
 import Navbar from './components/Header/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
 import { Providers } from './Providers';
-
+import StoreHydrator from '../app/utils/hydration'
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -25,6 +25,7 @@ export default function RootLayout({
       <body className="bg-custom-beige">
 
         <AuthProvider>
+          <StoreHydrator />
           <Providers>
           <Navbar />
         {children}
