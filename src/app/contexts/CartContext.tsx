@@ -279,6 +279,7 @@ export const useCartStore = create<CartStore>()(
   name: 'cart-storage',
   version: 1,
   storage: createJSONStorage(() => safeLocalStorage),
+  skipHydration: true,
   partialize: (state) => ({
     cart: state.cart,
   }),
