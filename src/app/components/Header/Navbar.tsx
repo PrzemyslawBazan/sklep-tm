@@ -63,7 +63,6 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-16">
           
-          {/* Logo & Nav Links */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center flex-shrink-0">
               <Image 
@@ -76,7 +75,6 @@ export default function Navbar() {
               />
             </Link>
             
-            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 ml-10">
               {navBarPath.map((item, index) => (
                 <Link 
@@ -104,7 +102,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-2">
             <Link 
               href="https://taxm.pl/konsultacja/" 
@@ -123,7 +120,6 @@ export default function Navbar() {
             <CartButton />
           </div>
 
-          {/* Mobile Menu Button - Animated Hamburger */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden inline-flex items-center justify-center h-10 w-10

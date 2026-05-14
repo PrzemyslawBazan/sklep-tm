@@ -308,12 +308,12 @@ export default function ServiceForm({ onServiceCreated, isAdmin }: ServiceFormPr
                         {error.length > 0 && (
                         <div className="p-4 bg-red-50 border border-red-200 rounded-md space-y-2">
                             <p className="text-sm font-medium text-red-700">
-                                Wystąpiły błędy:
+                                Wystąpiły błędy (jeśli nic nie jest napisane to zignoruj):
                             </p>
 
                             {error.map((err, idx) => (
                                 <div key={idx} className="text-sm text-red-600">
-                                    • {err}
+                                    {err}
                                 </div>
                             ))}
                         </div>

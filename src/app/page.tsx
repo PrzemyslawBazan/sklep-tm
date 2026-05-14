@@ -286,7 +286,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* RIGHT CTA */}
       <a
         href="https://taxm.pl/"
         className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 active:scale-95 whitespace-nowrap"
