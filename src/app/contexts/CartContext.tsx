@@ -244,17 +244,57 @@ export const useCartStore = create<CartStore>()(
 
       setHydrated: () => set({ isHydrated: true }),
     }),
-    {
-      name: 'cart-storage',
-      storage: createJSONStorage(() => safeLocalStorage),
-      onRehydrateStorage: () => (state, error) => {
+   {
+  name: 'cart-storage',
+  version: 1,
+  storage: createJSONStorage(() => safeLocalStorage),
+  partialize: (state) => ({
+    cart: state.cart,
+  }),
+  migrate: (persistedState: any) => {
+    if (!persistedState) {
+      return {
+        cart: [],
+      };
+    }
+    return persistedState;
+  },
+  merge: (persistedState: any, currentState) => {
+    const persistedCart =
+      persistedState?.cart ?? [];
+    return {
+      ...currentState,
+      ...persistedState,
+
+      cart: persistedCart.map(
+        (item: any) => ({
+          ...item,
+
+          addedAt: item.addedAt
+            ? new Date(item.addedAt)
+            : new Date(),
+        })
+      ),
+    };
+  },
+
+    onRehydrateStorage: () => (
+        state,
+        error
+      ) => {
         if (error) {
-          console.error('[CartStore] Rehydration failed, clearing corrupted storage:', error);
-          safeLocalStorage.removeItem('cart-storage');
+          console.error(
+            '[CartStore] Rehydration failed:',
+            error
+          );
+
+          safeLocalStorage.removeItem(
+            'cart-storage'
+          );
         }
+
         state?.setHydrated();
       },
-      partialize: (state) => ({ cart: state.cart }),
     }
   )
 );
