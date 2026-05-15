@@ -64,15 +64,14 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 const fileExt = file.name.split('.').pop();
                 if (!fileExtensions.includes(fileExt || "")) {
                     setError(["Niepoprawny format pliku. Wspierane formaty: jpg, png, webp"])
-
+                    console.log("ERROR")
                     return
                 }
                 const fileName = `${crypto.randomUUID()}.${fileExt}`;
                 const dims = await getImageDimensions(file);
                 if (dims.width !== 2816 && dims.height !== 1536 ) {
                     setError(["Złe wymiary obrazka. Wymagane wymiary: 2816x1536 (SzerokośćxWysokość)"])
-
-                    return
+                    console.log("Error")
                 }
 
                 const { error: uploadError } = await supabase.storage
@@ -82,7 +81,7 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 if (uploadError) {
                     console.error('Upload error:', uploadError);
                     setError(['Failed to upload image']);
-                    return;
+
                 }
     
                 const { data } = supabase.storage
