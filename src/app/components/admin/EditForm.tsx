@@ -12,6 +12,8 @@ import DurationField from './DurationField';
 import { ServiceData } from './ServiceForm';
 import { updateService } from '@/app/api/services/servicesApi';
 import supabase from '@/app/lib/supabase';
+import PhotoUploadField from './PhotoUploadField';
+import getImageDimensions from '../../utils/helpers'
 
 interface EditFormProps {
     onServiceUpdated: () => void;
@@ -25,7 +27,9 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string[]>([]);
+    const [formKey, setFormKey] = useState(0);
     const [udCodes, setUdCodes] = useState<{ id: number; name: string }[]>([]);
+    const fileExtensions = ["png", "jpg", "webp"]
 
     useEffect(() => {
          const fetchServices = async () => {
@@ -45,6 +49,57 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
         };
         fetchUdCodes();
     }, []);
+
+    const handlePhotoChange = async (file: File | null, previewUrl: string | null) => {
+            if (!file) {
+                setFormData(prev => {
+                    if (!prev) return prev;
+                    return {...prev, image_url: null}
+                });
+                return;
+            }
+            
+            try {
+
+                const fileExt = file.name.split('.').pop();
+                if (!fileExtensions.includes(fileExt || "")) {
+                    setError(["Niepoprawny format pliku. Wspierane formaty: jpg, png, webp"])
+
+                    return
+                }
+                const fileName = `${crypto.randomUUID()}.${fileExt}`;
+                const dims = await getImageDimensions(file);
+                if (dims.width !== 2816 && dims.height !== 1536 ) {
+                    setError(["Złe wymiary obrazka. Wymagane wymiary: 2816x1536 (SzerokośćxWysokość)"])
+
+                    return
+                }
+
+                const { error: uploadError } = await supabase.storage
+                    .from('service_images') // your bucket name
+                    .upload(fileName, file);
+    
+                if (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    setError(['Failed to upload image']);
+                    return;
+                }
+    
+                const { data } = supabase.storage
+                    .from('service_images')
+                    .getPublicUrl(fileName);
+                console.log(data.publicUrl);
+                setFormData(prev => {
+                    if (!prev) return prev;
+                    const updated = { ...prev, image_url: data.publicUrl }
+                    console.log("inside update", updated.image_url);
+                    return updated;
+                });
+            } catch (err) {
+                console.error('Unexpected upload error:', err);
+                setError(['Failed to upload image']);
+        }
+    };
 
     useEffect(() => {
     if (!selectedServiceId) return;
@@ -117,10 +172,11 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                 ...formData,
                 ud_code: formData.ud_code ? Number(formData.ud_code) : null
             }, isAdmin);
-
+            setFormKey(prev => prev + 1);
             if (result.success) {
                 onServiceUpdated();
                 setError([]);
+                
             } else {
                 setError([result.error || 'Failed to update service']);
             }
@@ -190,7 +246,9 @@ export default function EditForm({ onServiceUpdated, isAdmin }: EditFormProps) {
                     <StepsField formData={formData} onStepsChange={s => setFormData(p => p ? ({ ...p, steps: s }) : null)} />
                     <RequirementsField formData={formData} onRequirementsChange={r => setFormData(p => p ? ({ ...p, requirements: r }) : null)} />
                     <DurationField formData={formData} onInputChange={handleInputChange} />
-
+                    <PhotoUploadField key={formKey} onPhotoChange={handlePhotoChange}
+                                    currentPhotoUrl={formData.image_url}
+                                    />
                     <SubmitButton isSubmitting={isSubmitting} onClick={handleSubmit} Component='edit' />
                 </div>
             )}

@@ -46,7 +46,6 @@ export default function CheckoutPage() {
 
         if (customerData) {
           const customer = customerData;
-          // Handle both single object and array for addresses
           const addressData = Array.isArray(customer.addresses) 
             ? customer.addresses[0] 
             : customer.addresses;

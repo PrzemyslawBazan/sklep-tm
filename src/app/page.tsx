@@ -20,7 +20,6 @@ export default function Home() {
 
   const isHydrated = useIsCartHydrated();
 
-
   // Refs for scrollable containers
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -98,6 +97,7 @@ export default function Home() {
     return matchesCategoryTab && matchesSearch;
   });
 
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
