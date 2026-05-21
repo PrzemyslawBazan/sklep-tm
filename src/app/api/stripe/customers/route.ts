@@ -6,18 +6,27 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY as string, {
 
 export async function GET() {
   try {
-    const customers = await stripe.customers.list({ limit: 550 });
+    const customers = [];
+    for await (const customer of stripe.customers.list({
+      limit: 100,
+    })) {
+      customers.push({
+        id: customer.id,
+        email: customer.email,
+        name: customer.name || customer.email,
+        metadata: customer.metadata,
+        address: customer.address,
+        phone: customer.phone,
+      });
+    }
+
     return NextResponse.json({
-      customers: customers.data.map(c => ({
-        id: c.id,
-        email: c.email,
-        name: c.name || c.email,
-        metadata: c.metadata,
-        address: c.address,
-        phone: c.phone,
-      })),
+      customers,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }
