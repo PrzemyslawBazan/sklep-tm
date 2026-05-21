@@ -19,7 +19,7 @@ export async function GET() {
         phone: customer.phone,
       });
     }
-
+    
     return NextResponse.json({
       customers,
     });
