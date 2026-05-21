@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY as string, {
 
 export async function GET() {
   try {
-    const customers = await stripe.customers.list({ limit: 300 });
+    const customers = await stripe.customers.list({ limit: 550 });
     return NextResponse.json({
       customers: customers.data.map(c => ({
         id: c.id,

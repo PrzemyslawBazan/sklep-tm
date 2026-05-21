@@ -64,7 +64,6 @@ export function AuthButtons() {
     );
   }
 
-  // Logged in - show dropdown
   return (
     <div className="relative" ref={menuRef}>
       <button
