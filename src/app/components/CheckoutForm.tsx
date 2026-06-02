@@ -72,7 +72,7 @@ export default function CheckoutForm({ onSubmit, loading, initialData, onCustome
     setLoadingCustomers(true);
     try {
       const response = await fetch('/api/stripe/customers');
-
+      
       if (response.ok) {
         const data = await response.json();
         console.log('Customers list:', data);
