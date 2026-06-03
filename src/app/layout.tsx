@@ -5,6 +5,7 @@ import Navbar from './components/Header/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
 import { Providers } from './Providers';
 import StoreHydrator from '../app/utils/hydration'
+import Footer from './components/Footer/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Providers>
           <Navbar />
         {children}
+        <Footer />
         </Providers>
         </AuthProvider>
       </body>
