@@ -67,13 +67,14 @@ export default function Navbar() {
   <div className="max-w-7xl mx-auto   ">
     <div className="h-6 flex items-center">
       <a
-        href="tel:+48573581299"
+        href="https://rejestr.io/krs/585366/tax-money"
+        target='blank'
+        rel='noopener noreferrer'
         className="flex items-center gap-2 text-sm text-zinc-600 hover:text-zinc-900 transition-colors duration-150"
 
       >
         <Building className="w-3.5 h-3.5" />
         <span>NIP: 6793118460</span>
-
       </a>
     </div>
   </div>
